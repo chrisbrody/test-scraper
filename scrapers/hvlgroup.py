@@ -6,8 +6,10 @@ import os
 # Handle both direct execution and module import
 try:
     from .supabase_utils import sync_products_to_supabase
+    from .proxy_utils import get_proxy_manager, add_delay
 except ImportError:
     from supabase_utils import sync_products_to_supabase
+    from proxy_utils import get_proxy_manager, add_delay
 
 def scrape(num_pages=1, max_products=None):
     """
@@ -35,11 +37,18 @@ def scrape(num_pages=1, max_products=None):
         url = base_url.format(page_num)
         print(f"\nFetching page {page_num}: {url}")
 
-        # Make HTTP GET request
+        # Make HTTP GET request with proxy support
         try:
-            response = requests.get(url)
-            response.raise_for_status()  # Raises an HTTPError for bad responses
-        except requests.exceptions.RequestException as e:
+            proxy_manager = get_proxy_manager()
+            response = proxy_manager.make_request_with_retry(url, method='GET', max_retries=3, timeout=30)
+
+            if not response:
+                print(f"Error fetching page {page_num}: All retries failed")
+                continue
+
+            # Add delay to mimic human behavior
+            add_delay(1.0, 2.0)
+        except Exception as e:
             print(f"Error fetching page {page_num}: {e}")
             continue
 

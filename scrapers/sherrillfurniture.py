@@ -19,8 +19,10 @@ from selenium.webdriver.support import expected_conditions as EC
 # Handle both direct execution and module import
 try:
     from .supabase_utils import sync_products_to_supabase
+    from .proxy_utils import get_proxy_manager, add_delay
 except ImportError:
     from supabase_utils import sync_products_to_supabase
+    from proxy_utils import get_proxy_manager, add_delay
 
 # --- Configuration ---
 BASE_URL = "https://www.sherrillfurniture.com"
@@ -40,7 +42,7 @@ PRODUCT_NAME_SELECTOR = 'div.product-name'
 
 
 def create_driver():
-    """Create and configure a Chrome WebDriver with headless options"""
+    """Create and configure a Chrome WebDriver with headless options and proxy support"""
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
@@ -48,6 +50,10 @@ def create_driver():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+
+    # Configure proxy if enabled
+    proxy_manager = get_proxy_manager()
+    chrome_options = proxy_manager.configure_selenium_options(chrome_options)
 
     driver = webdriver.Chrome(options=chrome_options)
     return driver

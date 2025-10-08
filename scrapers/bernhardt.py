@@ -25,8 +25,10 @@ from selenium.webdriver.support import expected_conditions as EC
 # Handle both direct execution and module import
 try:
     from .supabase_utils import sync_products_to_supabase
+    from .proxy_utils import get_proxy_manager, add_delay
 except ImportError:
     from supabase_utils import sync_products_to_supabase
+    from proxy_utils import get_proxy_manager, add_delay
 
 # --- Configuration for User to Update ---
 BASE_URL = "https://www.bernhardt.com"
@@ -122,7 +124,7 @@ OUTPUT_FILE = 'bernhardt_products.json'
 
 
 def create_driver():
-    """Create and configure a Chrome WebDriver with headless options"""
+    """Create and configure a Chrome WebDriver with headless options and proxy support"""
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
@@ -130,6 +132,10 @@ def create_driver():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+
+    # Configure proxy if enabled
+    proxy_manager = get_proxy_manager()
+    chrome_options = proxy_manager.configure_selenium_options(chrome_options)
 
     # Use Selenium Manager to auto-download correct ChromeDriver version
     driver = webdriver.Chrome(options=chrome_options)
@@ -448,7 +454,7 @@ def scrape_single_product_page_selenium(driver, url: str) -> Optional[Dict]:
 
 def fetch_products_from_api(api_endpoint: Dict) -> List[Dict]:
     """
-    Fetch all products from the Bernhardt API endpoint.
+    Fetch all products from the Bernhardt API endpoint with proxy support.
 
     Args:
         api_endpoint: Dictionary containing API URL and params
@@ -458,14 +464,30 @@ def fetch_products_from_api(api_endpoint: Dict) -> List[Dict]:
     """
     try:
         print(f"\nFetching products from API: {api_endpoint['name']}")
-        response = requests.get(api_endpoint['url'], params=api_endpoint['params'], timeout=30)
-        response.raise_for_status()
+
+        # Use proxy manager for request with automatic retry
+        proxy_manager = get_proxy_manager()
+        response = proxy_manager.make_request_with_retry(
+            api_endpoint['url'],
+            method='GET',
+            params=api_endpoint['params'],
+            timeout=30,
+            max_retries=3
+        )
+
+        if not response:
+            print(f"  [ERROR] Failed to fetch from API after retries")
+            return []
 
         data = response.json()
         products = data.get('results', [])
         total = data.get('total', 0)
 
         print(f"  [OK] Fetched {len(products)} products from API (Total available: {total})")
+
+        # Add delay to mimic human behavior
+        add_delay(0.5, 1.5)
+
         return products
 
     except Exception as e:
