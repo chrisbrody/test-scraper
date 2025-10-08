@@ -31,8 +31,28 @@ BASE_URL = "https://www.bernhardt.com"
 CATEGORIES = [
     {
         "url": "https://www.bernhardt.com/products/luxury-bedroom-furniture",
-        "pages": 2
+        "pages": 1
     },
+    # {
+    #     "url": "https://www.bernhardt.com/products/luxury-bedroom-furniture",
+    #     "pages": 9
+    # },
+    # {
+    #     "url": "https://www.bernhardt.com/products/luxury-dining-room-furniture",
+    #     "pages": 7
+    # },
+    # {
+    #     "url": "https://www.bernhardt.com/products/luxury-living-room-furniture",
+    #     "pages": 23
+    # },
+    # {
+    #     "url": "https://www.bernhardt.com/products/luxury-home-office-room-furniture",
+    #     "pages": 2
+    # },
+    # {
+    #     "url": "https://www.bernhardt.com/products/luxury-outdoor-furniture",
+    #     "pages": 11
+    # }
 ]
 
 PAGE_SIZE = 48
@@ -258,14 +278,36 @@ def extract_data_from_json_ld(soup: BeautifulSoup, product_url: str) -> Optional
 
                 # Check if this is a Product type JSON-LD
                 if isinstance(data, dict) and data.get('@type') == 'Product':
-                    # Extract ALL fields (we'll filter what goes to DB later)
+                    # Extract price (convert to float/None)
+                    price = None
+                    try:
+                        price_value = data.get('offers', {}).get('price')
+                        if price_value not in [None, '']:
+                            price = float(price_value)
+                    except (ValueError, TypeError):
+                        price = None
+
+                    # Extract availability (store as text)
+                    in_stock = None
+                    availability = data.get('offers', {}).get('availability', '')
+                    if availability:
+                        # Extract readable status from schema.org URLs
+                        if 'InStock' in availability:
+                            in_stock = 'In stock'
+                        elif 'OutOfStock' in availability:
+                            in_stock = 'Out of stock'
+                        else:
+                            # Store the raw availability text if it's not a schema.org URL
+                            in_stock = availability
+
+                    # Create product dictionary (consistent field order across all scrapers)
                     product_data = {
-                        "product_url": product_url,
                         "name": data.get('name', ''),
-                        "img_url": data.get('image', ''),
-                        "price": data.get('offers', {}).get('price', ''),
                         "sku": data.get('sku', ''),
-                        "in_stock": "http://schema.org/InStock" in data.get('offers', {}).get('availability', '')
+                        "img_url": data.get('image', ''),
+                        "product_url": product_url,
+                        "price": price,
+                        "in_stock": in_stock
                     }
 
                     # Validate that we got essential data
@@ -292,11 +334,14 @@ def extract_data_from_html_fallback(soup: BeautifulSoup, product_url: str) -> Di
     Returns:
         Dictionary with extracted product data (may contain empty values)
     """
+    # Create product dictionary (consistent field order across all scrapers)
     product_data = {
-        "product_url": product_url,
         "name": "",
-        "img_url": "",
         "sku": "",
+        "img_url": "",
+        "product_url": product_url,
+        "price": None,
+        "in_stock": None
     }
 
     try:
@@ -456,6 +501,8 @@ def scrape(num_pages=None, max_products=None):
             "sku": product.get("sku"),
             "img_url": product.get("img_url"),
             "product_url": product.get("product_url"),
+            "price": product.get("price"),
+            "in_stock": product.get("in_stock"),
         }
         db_products.append(db_product)
 

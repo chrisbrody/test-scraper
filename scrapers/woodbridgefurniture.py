@@ -2,7 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-from .supabase_utils import sync_products_to_supabase
+
+# Handle both direct execution and module import
+try:
+    from .supabase_utils import sync_products_to_supabase
+except ImportError:
+    from supabase_utils import sync_products_to_supabase
 
 def scrape(num_pages=1, max_products=None):
     """
@@ -74,12 +79,14 @@ def scrape(num_pages=1, max_products=None):
                     print(f"  Skipping product {idx}: No SKU found")
                     continue
 
-                # Create product dictionary
+                # Create product dictionary (consistent field order across all scrapers)
                 product_data = {
                     "name": name,
                     "sku": sku,
                     "img_url": img_url,
-                    "product_url": product_url
+                    "product_url": product_url,
+                    "price": None,  # Woodbridge doesn't show price on listing page
+                    "in_stock": None  # Woodbridge doesn't show stock status on listing page
                 }
 
                 all_products.append(product_data)

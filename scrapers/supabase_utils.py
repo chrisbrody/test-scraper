@@ -22,8 +22,8 @@ def sync_products_to_supabase(products: list, vendor: str, batch_size: int = 100
     Upserts all products in batches and deletes ones no longer on the website.
 
     Args:
-        products: List of product dictionaries with keys: name, sku, img_url, product_url
-        vendor: Vendor name (e.g., "hvlgroup", "woodbridgefurniture")
+        products: List of product dictionaries with keys: name, sku, img_url, product_url, price, in_stock
+        vendor: Vendor name (e.g., "hvlgroup", "woodbridgefurniture", "bernhardt")
         batch_size: Number of products to upsert per batch (default: 100)
 
     Returns:

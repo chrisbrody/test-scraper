@@ -2,7 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-from .supabase_utils import sync_products_to_supabase
+
+# Handle both direct execution and module import
+try:
+    from .supabase_utils import sync_products_to_supabase
+except ImportError:
+    from supabase_utils import sync_products_to_supabase
 
 def scrape(num_pages=1, max_products=None):
     """
@@ -70,17 +75,34 @@ def scrape(num_pages=1, max_products=None):
                     href = link_elem.get('href')
                     product_url = f"https://hvlgroup.com{href}" if not href.startswith('http') else href
 
+                # Extract Price
+                price_elem = product.find('div', id=lambda x: x and 'price' in x)
+                price = None
+                if price_elem:
+                    price_text = price_elem.get_text(strip=True)
+                    # Remove dollar sign and convert to float
+                    try:
+                        price = float(price_text.replace('$', '').replace(',', '').strip())
+                    except (ValueError, AttributeError):
+                        price = None
+
+                # Extract Stock Status (store as text)
+                stock_elem = product.find('div', id=lambda x: x and 'stock-status' in x)
+                in_stock = stock_elem.get_text(strip=True) if stock_elem else None
+
                 # Skip products without SKU
                 if not sku:
                     print(f"  Skipping product {idx}: No SKU found")
                     continue
 
-                # Create product dictionary for Supabase (matching table column names)
+                # Create product dictionary (consistent field order across all scrapers)
                 product_data = {
                     "name": name,
                     "sku": sku,
                     "img_url": img_url,
-                    "product_url": product_url
+                    "product_url": product_url,
+                    "price": price,
+                    "in_stock": in_stock
                 }
 
                 all_products.append(product_data)
