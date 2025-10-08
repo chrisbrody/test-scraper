@@ -654,16 +654,15 @@ def merge_api_data_with_sku_map(api_products: List[Dict], sku_map: Dict[str, Dic
         except (ValueError, TypeError):
             price = None
 
-        # Determine stock status
-        in_stock = None
-        available_qty = api_product.get('availableQty')  # API uses lowercase 'availableQty'
-        if available_qty is not None:
-            in_stock = 'In stock' if available_qty > 0 else 'Out of stock'
-
-        # Check for InStock tag in 'tags' object
+        # Determine stock status from tags
+        in_stock = 'Out of stock'  # Default to out of stock
         tags = api_product.get('tags', {})
+
+        # Check if InStock tag exists and contains "Yes"
         if isinstance(tags, dict) and 'InStock' in tags:
-            in_stock = 'In stock'
+            instock_values = tags.get('InStock', [])
+            if isinstance(instock_values, list) and 'Yes' in instock_values:
+                in_stock = 'In stock'
 
         # Get product URL and image URL from SKU map
         sku_data = sku_map.get(sku, {})
