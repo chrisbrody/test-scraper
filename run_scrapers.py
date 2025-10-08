@@ -3,7 +3,7 @@ Centralized scraper runner that executes all vendor scrapers sequentially.
 Allows easy control over which scrapers to run and batch size limits.
 """
 
-from scrapers import hvlgroup, woodbridgefurniture, bernhardt
+from scrapers import hvlgroup, woodbridgefurniture, bernhardt, hickorychair, sherrillfurniture
 
 # Configuration
 SCRAPERS = {
@@ -22,6 +22,14 @@ SCRAPERS = {
     "bernhardt": {
         "enabled": True,
         "scraper": bernhardt.scrape,
+    },
+    "hickorychair": {
+        "enabled": True,
+        "scraper": hickorychair.scrape,
+    },
+    "sherrillfurniture": {
+        "enabled": True,
+        "scraper": sherrillfurniture.scrape,
     },
 }
 
