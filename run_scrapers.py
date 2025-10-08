@@ -10,13 +10,13 @@ SCRAPERS = {
     "hvlgroup": {
         "enabled": True,
         "scraper": hvlgroup.scrape,
-        "pages": 3,  # Number of pages to scrape
+        "pages": 1,  # Number of pages to scrape
         "async": False,
     },
     "woodbridgefurniture": {
         "enabled": True,
         "scraper": woodbridgefurniture.scrape,
-        "pages": 2,  # Number of pages to scrape
+        "pages": 1,  # Number of pages to scrape
         "async": False,
     },
     "bernhardt": {
