@@ -24,17 +24,22 @@ This project scrapes product information (name, SKU, image URL, price, stock sta
 test-direct-mfg-scraper/
 ├── scrapers/
 │   ├── __init__.py
-│   ├── hvlgroup.py           # HVL Group scraper
+│   ├── hvlgroup.py            # HVL Group scraper
 │   ├── woodbridgefurniture.py # Woodbridge Furniture scraper
-│   ├── bernhardt.py          # Bernhardt scraper
-│   └── supabase_utils.py     # Database sync utilities
+│   ├── bernhardt.py           # Bernhardt scraper (Selenium)
+│   ├── hickorychair.py        # Hickory Chair scraper (Selenium)
+│   ├── sherrillfurniture.py   # Sherrill Furniture scraper (Selenium)
+│   ├── proxy_utils.py         # Rotating proxy manager
+│   └── supabase_utils.py      # Database sync utilities
 ├── data/
 │   ├── hvlgroup.json
 │   ├── woodbridgefurniture.json
-│   └── bernhardt_products.json
-├── run_scrapers.py           # Main scraper runner
-├── supabase_setup.sql        # Database schema
-├── .env                      # Environment variables
+│   ├── bernhardt_products.json
+│   ├── hickorychair_products.json
+│   └── sherrillfurniture_products.json
+├── run_scrapers.py            # Main scraper runner
+├── supabase_setup.sql         # Database schema
+├── .env.example               # Environment variables template
 └── README.md
 ```
 
@@ -111,6 +116,14 @@ SCRAPERS = {
         "enabled": True,
         "scraper": bernhardt.scrape,
     },
+    "hickorychair": {
+        "enabled": True,
+        "scraper": hickorychair.scrape,
+    },
+    "sherrillfurniture": {
+        "enabled": True,
+        "scraper": sherrillfurniture.scrape,
+    },
 }
 
 MAX_PRODUCTS_PER_BATCH = 500  # Limit products per vendor
@@ -141,12 +154,31 @@ print(stats)
 
 ### Bernhardt (`bernhardt.py`)
 - **URL**: https://www.bernhardt.com
-- **Method**: Async product discovery + JSON-LD extraction
+- **Method**: API-based scraping with Selenium fallback + JSON-LD extraction
 - **Output**: `data/bernhardt_products.json`
 - **Features**:
-  - Discovers product URLs from category pages
+  - Uses Bernhardt API endpoint for faster scraping
+  - Selenium-based product detail extraction
   - Extracts structured JSON-LD data
   - Falls back to HTML parsing if needed
+
+### Hickory Chair (`hickorychair.py`)
+- **URL**: https://www.hickorychair.com
+- **Method**: Selenium-based scraping with infinite scroll
+- **Output**: `data/hickorychair_products.json`
+- **Features**:
+  - Handles JavaScript-rendered content
+  - Automatic scroll to load all products
+  - JSON-LD extraction from product pages
+
+### Sherrill Furniture (`sherrillfurniture.py`)
+- **URL**: https://www.sherrillfurniture.com
+- **Method**: Selenium-based scraping with infinite scroll
+- **Output**: `data/sherrillfurniture_products.json`
+- **Features**:
+  - JavaScript-rendered product listings
+  - Automatic scroll pagination
+  - JSON-LD structured data extraction
 
 ## Data Schema
 
