@@ -1,8 +1,22 @@
 Goal: Create a Python script (scraper.py) that scrapes product data from a single, specified vendor website (Bernhardt.com). It will:
 Discover individual product URLs from multiple provided category/listing pages (using traditional HTML parsing and pagination if present).
 Visit each discovered product page to extract detailed information primarily from JSON-LD, precisely matching the provided Bernhardt structure.
-The extracted fields are: Name, Img Url, Price, Sku, and In Stock?.
+The extracted fields are: Name, Img Url, Price, Sku, In Stock?, Room Types (array), and Product Type.
 The output should be a JSON file named bernhardt.json.
+
+IMPORTANT - Product Categorization:
+All scrapers MUST include categorization for room types and product types:
+- room_types: Array of room categories (e.g., ["Bedroom", "Living Room"])
+- product_type: Single product category (e.g., "Bed", "Sofa", "Chair")
+
+Use the categorization_utils.py helper to automatically categorize products:
+1. Extract room type from category URL if available
+2. Infer product type from product name using keyword matching
+3. Fall back to multi-purpose categories if unable to determine
+
+The categorization taxonomies are defined in:
+- taxonomies/room_types.json
+- taxonomies/product_types.json
 Directory Structure:
 A scrapers folder containing scraper.py.
 A data folder (this exists) where bernhardt.json will be saved.
@@ -48,6 +62,15 @@ Fallback Selectors: The extract_data_from_html_fallback function should still be
 Step 3: Structure the Python Script (scraper.py)
 The scraper.py file will be created inside a scrapers directory.
 Imports: (As previously defined)
+
+IMPORTANT: Import categorization utility at the top:
+```python
+try:
+    from .categorization_utils import categorize_product
+except ImportError:
+    from categorization_utils import categorize_product
+```
+
 Global Configuration:
 code
 Python
@@ -96,6 +119,18 @@ Parses JSON.
 Crucially, uses the refined JSON_LD_MAPPING to extract data.
 For "Img Url": Directly uses data.get('image').
 For "In Stock?": Interprets data.get('offers', {}).get('availability') to a boolean. Given the example uses "http://schema.org/InStock", the logic should check for that exact string.
+
+IMPORTANT - Add Categorization:
+After extracting basic product data, categorize the product:
+```python
+# Categorize product
+categorization = categorize_product(product_name, category_url)
+
+# Add to product dictionary
+product_data["room_types"] = categorization['room_types']
+product_data["product_type"] = categorization['product_type']
+```
+
 extract_data_from_html_fallback(soup) function:
 Process: As previously defined (generic placeholders).
 scrape_single_product_page(session, url) function:

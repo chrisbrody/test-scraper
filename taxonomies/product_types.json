@@ -1,0 +1,124 @@
+{
+  "product_types": [
+    {
+      "id": "bed",
+      "name": "Bed",
+      "keywords": ["bed", "canopy bed", "panel bed", "platform bed", "sleigh bed", "upholstered bed", "king", "queen"]
+    },
+    {
+      "id": "sofa",
+      "name": "Sofa",
+      "keywords": ["sofa", "couch", "sectional", "corner sofa", "laf sofa", "raf sofa"]
+    },
+    {
+      "id": "loveseat",
+      "name": "Loveseat",
+      "keywords": ["loveseat", "love seat", "laf love seat", "raf love seat"]
+    },
+    {
+      "id": "chair",
+      "name": "Chair",
+      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair"]
+    },
+    {
+      "id": "table",
+      "name": "Table",
+      "keywords": ["table", "center table", "coffee table", "console table"]
+    },
+    {
+      "id": "side_table",
+      "name": "Side Table",
+      "keywords": ["side table", "end table", "lamp table"]
+    },
+    {
+      "id": "drink_table",
+      "name": "Drink Table",
+      "keywords": ["drink table", "drinks table", "accent table"]
+    },
+    {
+      "id": "nightstand",
+      "name": "Nightstand",
+      "keywords": ["nightstand", "bedside table", "bedside", "night stand"]
+    },
+    {
+      "id": "desk",
+      "name": "Desk",
+      "keywords": ["desk", "writing desk", "secretary desk"]
+    },
+    {
+      "id": "dresser",
+      "name": "Dresser",
+      "keywords": ["dresser", "chest", "chest of drawers", "bureau", "chairside chest"]
+    },
+    {
+      "id": "cabinet",
+      "name": "Cabinet",
+      "keywords": ["cabinet", "cupboard", "armoire", "wardrobe"]
+    },
+    {
+      "id": "bookcase",
+      "name": "Bookcase",
+      "keywords": ["bookcase", "bookshelf", "shelving", "etagere"]
+    },
+    {
+      "id": "ottoman",
+      "name": "Ottoman",
+      "keywords": ["ottoman", "pouf", "footstool", "otto"]
+    },
+    {
+      "id": "bench",
+      "name": "Bench",
+      "keywords": ["bench", "settee"]
+    },
+    {
+      "id": "chandelier",
+      "name": "Chandelier",
+      "keywords": ["chandelier"]
+    },
+    {
+      "id": "pendant",
+      "name": "Pendant",
+      "keywords": ["pendant", "hanging light"]
+    },
+    {
+      "id": "wall_sconce",
+      "name": "Wall Sconce",
+      "keywords": ["wall sconce", "sconce", "wall light"]
+    },
+    {
+      "id": "table_lamp",
+      "name": "Table Lamp",
+      "keywords": ["table lamp", "lamp"]
+    },
+    {
+      "id": "floor_lamp",
+      "name": "Floor Lamp",
+      "keywords": ["floor lamp", "standing lamp"]
+    },
+    {
+      "id": "flush_mount",
+      "name": "Flush Mount",
+      "keywords": ["flush mount", "ceiling light", "semi flush"]
+    },
+    {
+      "id": "mirror",
+      "name": "Mirror",
+      "keywords": ["mirror", "looking glass"]
+    },
+    {
+      "id": "plant_stand",
+      "name": "Plant Stand",
+      "keywords": ["plant stand"]
+    },
+    {
+      "id": "tier_table",
+      "name": "Tier Table",
+      "keywords": ["tier table", "tiered table", "nest of tables"]
+    },
+    {
+      "id": "other",
+      "name": "Other",
+      "keywords": ["accessory", "decor", "miscellaneous"]
+    }
+  ]
+}

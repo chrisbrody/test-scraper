@@ -1,0 +1,49 @@
+{
+  "room_types": [
+    {
+      "id": "bedroom",
+      "name": "Bedroom",
+      "keywords": ["bedroom", "bed room", "master bedroom", "guest bedroom", "luxury-bedroom-furniture", "bedside", "nightstand"]
+    },
+    {
+      "id": "living_room",
+      "name": "Living Room",
+      "keywords": ["living", "living room", "lounge", "family room", "sitting room", "luxury-living-room-furniture", "sofa", "loveseat", "sectional"]
+    },
+    {
+      "id": "dining_room",
+      "name": "Dining Room",
+      "keywords": ["dining", "dining room", "luxury-dining-room-furniture"]
+    },
+    {
+      "id": "office",
+      "name": "Office",
+      "keywords": ["office", "home office", "study", "den", "library", "luxury-home-office-room-furniture", "desk"]
+    },
+    {
+      "id": "outdoor",
+      "name": "Outdoor",
+      "keywords": ["outdoor", "patio", "garden", "exterior", "luxury-outdoor-furniture"]
+    },
+    {
+      "id": "entryway",
+      "name": "Entryway",
+      "keywords": ["entryway", "foyer", "entrance", "hallway", "mudroom", "center hall"]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "keywords": ["kitchen", "breakfast nook"]
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "keywords": ["bathroom", "bath", "powder room"]
+    },
+    {
+      "id": "multi_purpose",
+      "name": "Multi-Purpose",
+      "keywords": ["versatile", "any room", "general", "accent"]
+    }
+  ]
+}

@@ -26,9 +26,11 @@ from selenium.webdriver.support import expected_conditions as EC
 try:
     from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
+    from .categorization_utils import categorize_product
 except ImportError:
     from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
+    from categorization_utils import categorize_product
 
 # --- Configuration for User to Update ---
 BASE_URL = "https://www.bernhardt.com"
@@ -626,13 +628,14 @@ def scrape_category_pages_for_skus(driver, category_url: str, max_pages: int) ->
     return all_sku_map
 
 
-def merge_api_data_with_sku_map(api_products: List[Dict], sku_map: Dict[str, Dict]) -> List[Dict]:
+def merge_api_data_with_sku_map(api_products: List[Dict], sku_map: Dict[str, Dict], category_url: str = None) -> List[Dict]:
     """
     Merge API product data with SKU mapping to create complete product records.
 
     Args:
         api_products: List of products from API
         sku_map: Dictionary mapping SKU to product_url and img_url
+        category_url: Category URL for room type extraction
 
     Returns:
         List of complete product dictionaries
@@ -672,14 +675,22 @@ def merge_api_data_with_sku_map(api_products: List[Dict], sku_map: Dict[str, Dic
         if product_url and img_url:
             matched_count += 1
 
+        # Get product name
+        product_name = api_product.get('shortDescription', '')  # API uses lowercase 'shortDescription'
+
+        # Categorize product
+        categorization = categorize_product(product_name, category_url)
+
         # Create product dictionary
         product = {
-            "name": api_product.get('shortDescription', ''),  # API uses lowercase 'shortDescription'
+            "name": product_name,
             "sku": sku,
             "img_url": img_url,
             "product_url": product_url,
             "price": price,
-            "in_stock": in_stock
+            "in_stock": in_stock,
+            "room_types": categorization['room_types'],
+            "product_type": categorization['product_type']
         }
 
         products.append(product)
@@ -776,7 +787,7 @@ def scrape(num_pages=None, max_products=None):
         print(f"\nSTEP 3: Merging {api_endpoint['name']} data")
         print("=" * 80)
 
-        merged_products = merge_api_data_with_sku_map(api_products, sku_map)
+        merged_products = merge_api_data_with_sku_map(api_products, sku_map, api_endpoint['category_url'])
         all_products.extend(merged_products)
 
         # Check if we've hit max_products limit
@@ -816,6 +827,8 @@ def scrape(num_pages=None, max_products=None):
             "product_url": product.get("product_url"),
             "price": product.get("price"),
             "in_stock": product.get("in_stock"),
+            "room_types": product.get("room_types"),
+            "product_type": product.get("product_type"),
         }
         db_products.append(db_product)
 
