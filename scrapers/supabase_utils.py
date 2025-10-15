@@ -49,7 +49,7 @@ def product_needs_update(new_product: dict, existing_product: dict) -> bool:
         True if product needs update, False otherwise
     """
     # Fields to compare (ignore timestamps and IDs)
-    compare_fields = ['name', 'img_url', 'product_url', 'price', 'in_stock', 'room_types', 'product_type']
+    compare_fields = ['name', 'img_url', 'product_url', 'price', 'in_stock', 'room_types', 'product_type', 'fixture_type']
 
     for field in compare_fields:
         new_value = new_product.get(field)

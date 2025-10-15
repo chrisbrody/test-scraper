@@ -10,7 +10,7 @@ SCRAPERS = {
     "hvlgroup": {
         "enabled": True,
         "scraper": hvlgroup.scrape,
-        "pages": 1,  # Number of pages to scrape
+        # Note: hvlgroup uses room_configs internally, no pages param needed
         "async": False,
     },
     "woodbridgefurniture": {
@@ -63,10 +63,12 @@ def main():
 
         try:
             # Run scraper with configured settings
-            stats = config["scraper"](
-                num_pages=config.get("pages"),
-                max_products=MAX_PRODUCTS_PER_BATCH
-            )
+            # Only pass num_pages if it exists in config (not all scrapers use it)
+            scraper_kwargs = {"max_products": MAX_PRODUCTS_PER_BATCH}
+            if "pages" in config:
+                scraper_kwargs["num_pages"] = config["pages"]
+
+            stats = config["scraper"](**scraper_kwargs)
 
             # Update totals
             total_stats["vendors_scraped"] += 1
