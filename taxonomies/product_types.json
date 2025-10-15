@@ -141,6 +141,11 @@
       "keywords": ["accent", "tray", "accessory", "decor"]
     },
     {
+      "id": "pillow",
+      "name": "Pillow",
+      "keywords": ["pillow", "throw pillow", "cushion", "bolster"]
+    },
+    {
       "id": "table_base",
       "name": "Table Base",
       "keywords": ["pedestal base", "table base", "base only"]

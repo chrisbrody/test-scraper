@@ -109,6 +109,7 @@ def infer_room_types_from_product_type(product_type: str) -> List[str]:
         "Side Table": ["Living Room", "Bedroom", "Multi-Purpose"],
         "Drink Table": ["Living Room", "Multi-Purpose"],
         "Plant Stand": ["Living Room", "Entryway", "Multi-Purpose"],
+        "Pillow": ["Living Room", "Bedroom", "Outdoor", "Multi-Purpose"],
     }
 
     return product_to_rooms.get(product_type, ["Multi-Purpose"])

@@ -124,6 +124,78 @@ PRODUCT_NAME_SELECTOR = 'div.search-item-name'
 # --- END Configuration ---
 
 
+def categorize_lighting_product(product_name, room_from_category=None):
+    """
+    Enhanced categorization specifically for lighting products
+    Matches HVL Group's lighting categorization logic
+
+    Returns:
+        dict with keys:
+            - room_types: list of applicable rooms
+            - product_type: main category (always "Lighting")
+            - fixture_type: sub-category (e.g., "Chandelier", "Wall Sconce")
+    """
+    name_lower = product_name.lower() if product_name else ""
+
+    # Fixture type detection (sub-categories within lighting)
+    fixture_types = {
+        "Chandelier": ["chandelier"],
+        "Wall Sconce": ["wall sconce", "sconce"],
+        "Pendant": ["pendant"],
+        "Flush Mount": ["flush mount", "ceiling mount"],
+        "Semi-Flush Mount": ["semi-flush", "semi flush"],
+        "Linear": ["linear"],
+        "Recessed": ["recessed"],
+        "Decorative Downlight": ["downlight", "down light"],
+        "Table Lamp": ["table lamp"],
+        "Floor Lamp": ["floor lamp"],
+        "Desk Lamp": ["desk lamp"],
+        "Vanity Light": ["vanity", "bath light"],
+        "Picture Light": ["picture light"],
+        "Outdoor": ["outdoor", "exterior"],
+    }
+
+    fixture_type = "Other Lighting"
+    for fixture, keywords in fixture_types.items():
+        if any(keyword in name_lower for keyword in keywords):
+            fixture_type = fixture
+            break
+
+    # Room type detection (can be multiple)
+    room_keywords = {
+        "Bedroom": ["bedroom"],
+        "Bathroom": ["bathroom", "bath", "vanity"],
+        "Kitchen": ["kitchen"],
+        "Dining Room": ["dining"],
+        "Living Room": ["living room", "living"],
+        "Office": ["office", "desk"],
+        "Hallway": ["hallway", "entry", "foyer"],
+        "Outdoor": ["outdoor", "exterior", "patio"],
+    }
+
+    detected_rooms = []
+
+    # Add room from category if provided
+    if room_from_category:
+        detected_rooms.append(room_from_category)
+
+    # Check product name for additional room hints
+    for room, keywords in room_keywords.items():
+        if any(keyword in name_lower for keyword in keywords):
+            if room not in detected_rooms:
+                detected_rooms.append(room)
+
+    # If no rooms detected, mark as multi-purpose
+    if not detected_rooms:
+        detected_rooms = ["Multi-Purpose"]
+
+    return {
+        "room_types": detected_rooms,
+        "product_type": "Lighting",  # All lighting products
+        "fixture_type": fixture_type
+    }
+
+
 def create_driver():
     """Create and configure a Chrome WebDriver with headless options and proxy support"""
     chrome_options = Options()
@@ -235,8 +307,12 @@ def extract_products_from_listing_page(html: str, base_url: str, products_by_sku
                 if not name:
                     name = img_elem.get('alt', '')
 
-            # Categorize product with category name for better inference
-            categorization = categorize_product(name, category_url, category_name)
+            # Use lighting-specific categorization for Lighting category
+            if category_name == "Lighting":
+                categorization = categorize_lighting_product(name, room_type)
+            else:
+                # Categorize product with category name for better inference
+                categorization = categorize_product(name, category_url, category_name)
 
             # Use explicit room_type if provided, otherwise use categorization
             room_types = [room_type] if room_type else categorization['room_types']
@@ -251,6 +327,10 @@ def extract_products_from_listing_page(html: str, base_url: str, products_by_sku
                 "room_types": room_types,
                 "product_type": categorization['product_type']
             }
+
+            # Add fixture_type for lighting products
+            if category_name == "Lighting":
+                product_data["fixture_type"] = categorization['fixture_type']
 
             products_by_sku[sku] = product_data
             new_products.append(product_data)
