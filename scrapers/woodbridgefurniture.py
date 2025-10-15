@@ -7,9 +7,11 @@ import os
 try:
     from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
+    from .categorization_utils import categorize_product
 except ImportError:
     from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
+    from categorization_utils import categorize_product
 
 def scrape(num_pages=1, max_products=None):
     """
@@ -88,6 +90,9 @@ def scrape(num_pages=1, max_products=None):
                     print(f"  Skipping product {idx}: No SKU found")
                     continue
 
+                # Categorize product
+                categorization = categorize_product(name, product_url)
+
                 # Create product dictionary (consistent field order across all scrapers)
                 product_data = {
                     "name": name,
@@ -95,7 +100,9 @@ def scrape(num_pages=1, max_products=None):
                     "img_url": img_url,
                     "product_url": product_url,
                     "price": None,  # Woodbridge doesn't show price on listing page
-                    "in_stock": None  # Woodbridge doesn't show stock status on listing page
+                    "in_stock": None,  # Woodbridge doesn't show stock status on listing page
+                    "room_types": categorization['room_types'],
+                    "product_type": categorization['product_type']
                 }
 
                 all_products.append(product_data)

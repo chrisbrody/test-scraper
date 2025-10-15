@@ -20,9 +20,11 @@ from selenium.webdriver.support import expected_conditions as EC
 try:
     from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
+    from .categorization_utils import categorize_product
 except ImportError:
     from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
+    from categorization_utils import categorize_product
 
 # --- Configuration ---
 BASE_URL = "https://www.sherrillfurniture.com"
@@ -83,8 +85,36 @@ def fetch_page_with_selenium(driver, url: str, wait_for_selector: str = None) ->
             except:
                 print(f"  Warning: Timeout waiting for selector '{wait_for_selector}'")
 
-        # Additional wait for any JS rendering
+        # Additional wait for initial JS rendering
         time.sleep(3)
+
+        # Scroll to bottom to trigger lazy loading of all products
+        print("  Scrolling page to load all products...")
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        scroll_attempts = 0
+        max_scroll_attempts = 10
+
+        while scroll_attempts < max_scroll_attempts:
+            # Scroll down to bottom
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+            # Wait for new content to load
+            time.sleep(2)
+
+            # Calculate new scroll height and compare with last scroll height
+            new_height = driver.execute_script("return document.body.scrollHeight")
+
+            if new_height == last_height:
+                # No new content loaded, we're done
+                break
+
+            last_height = new_height
+            scroll_attempts += 1
+            print(f"    Scroll {scroll_attempts}/{max_scroll_attempts}...")
+
+        # Scroll back to top
+        driver.execute_script("window.scrollTo(0, 0);")
+        time.sleep(1)
 
         return driver.page_source
     except Exception as e:
@@ -92,7 +122,7 @@ def fetch_page_with_selenium(driver, url: str, wait_for_selector: str = None) ->
         return None
 
 
-def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[str]) -> List[Dict]:
+def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[str], category_url: str = None) -> List[Dict]:
     """
     Extract product data from the listing page HTML.
 
@@ -100,6 +130,7 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
         html: HTML content of listing page
         base_url: Base URL for resolving relative links
         seen_skus: Set of SKUs already encountered (for deduplication)
+        category_url: Category URL for room type extraction (optional)
 
     Returns:
         List of product dictionaries
@@ -136,6 +167,10 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
             name_elem = item.select_one(PRODUCT_NAME_SELECTOR)
             name = name_elem.get_text(strip=True) if name_elem else ''
 
+            # Use SKU as fallback name if name is empty
+            if not name and sku:
+                name = sku
+
             # Extract image
             img_elem = item.select_one(PRODUCT_IMG_SELECTOR)
             img_url = ''
@@ -145,13 +180,23 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
 
             # Only add if we have at least a SKU
             if sku:
+                # Categorize product
+                categorization = categorize_product(name, category_url)
+
+                # Hardcoded fix for SWDC361 (swivel chair with no name on website)
+                if sku == "SWDC361":
+                    categorization['product_type'] = "Chair"
+                    categorization['room_types'] = ["Living Room", "Dining Room", "Office", "Multi-Purpose"]
+
                 product_data = {
                     "name": name,
                     "sku": sku,
                     "img_url": img_url,
                     "product_url": product_url,
                     "price": None,  # No price available
-                    "in_stock": None  # No stock status available
+                    "in_stock": None,  # No stock status available
+                    "room_types": categorization['room_types'],
+                    "product_type": categorization['product_type']
                 }
 
                 products.append(product_data)
@@ -206,7 +251,7 @@ def scrape(num_pages=None, max_products=None):
             }
 
         print(f"Extracting products...")
-        all_products = extract_products_from_listing_page(html, BASE_URL, seen_skus)
+        all_products = extract_products_from_listing_page(html, BASE_URL, seen_skus, LISTING_URL)
 
         # Apply max_products limit if specified
         if max_products and len(all_products) > max_products:

@@ -8,7 +8,7 @@
     {
       "id": "sofa",
       "name": "Sofa",
-      "keywords": ["sofa", "couch", "sectional", "corner sofa", "laf sofa", "raf sofa"]
+      "keywords": ["sofa", "couch", "sectional", "corner sofa", "laf sofa", "raf sofa", "bumper", "curved corner", "wedge corner", "corner unit", "armless unit", "banquette", "m2m", "made to measure", "raf unit", "square corner", "lounge", "divan", "tete-a-tete", "bistro", "unit with"]
     },
     {
       "id": "loveseat",
@@ -18,17 +18,17 @@
     {
       "id": "chair",
       "name": "Chair",
-      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair"]
+      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair", "swivel rocker", "rocker"]
     },
     {
       "id": "table",
       "name": "Table",
-      "keywords": ["table", "center table", "coffee table", "console table"]
+      "keywords": ["dining table", "center table", "coffee table", "console table", "hall table", "center hall table", "book table", "pedestal table", "martini table", "spot table", "table"]
     },
     {
       "id": "side_table",
       "name": "Side Table",
-      "keywords": ["side table", "end table", "lamp table"]
+      "keywords": ["side table", "end table", "lamp table", "drum table", "chairside table"]
     },
     {
       "id": "drink_table",
@@ -48,12 +48,12 @@
     {
       "id": "dresser",
       "name": "Dresser",
-      "keywords": ["dresser", "chest", "chest of drawers", "bureau", "chairside chest"]
+      "keywords": ["dresser", "chest of drawers", "bureau", "chairside chest", "drawer chest", "door chest"]
     },
     {
       "id": "cabinet",
       "name": "Cabinet",
-      "keywords": ["cabinet", "cupboard", "armoire", "wardrobe"]
+      "keywords": ["cabinet", "cupboard", "armoire", "wardrobe", "deed box", "file chest"]
     },
     {
       "id": "bookcase",
@@ -63,7 +63,7 @@
     {
       "id": "ottoman",
       "name": "Ottoman",
-      "keywords": ["ottoman", "pouf", "footstool", "otto"]
+      "keywords": ["ottoman", "pouf", "footstool", "otto", "chaise", "chaise lounge"]
     },
     {
       "id": "bench",
@@ -98,7 +98,7 @@
     {
       "id": "flush_mount",
       "name": "Flush Mount",
-      "keywords": ["flush mount", "ceiling light", "semi flush"]
+      "keywords": ["flush mount", "semi flush", "ceiling light"]
     },
     {
       "id": "mirror",

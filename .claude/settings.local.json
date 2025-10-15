@@ -13,7 +13,8 @@
       "Bash(git push:*)",
       "Bash(git rm:*)",
       "Bash(git checkout:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:www.sherrillfurniture.com)"
     ],
     "deny": [],
     "ask": []

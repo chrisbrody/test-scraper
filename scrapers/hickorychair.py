@@ -20,9 +20,11 @@ from selenium.webdriver.support import expected_conditions as EC
 try:
     from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
+    from .categorization_utils import categorize_product
 except ImportError:
     from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
+    from categorization_utils import categorize_product
 
 # --- Configuration ---
 BASE_URL = "https://www.hickorychair.com"
@@ -97,7 +99,7 @@ def fetch_page_with_selenium(driver, url: str, wait_for_selector: str = None) ->
         return None
 
 
-def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[str]) -> List[Dict]:
+def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[str], category_url: str = None) -> List[Dict]:
     """
     Extract product data from a listing page HTML.
 
@@ -105,6 +107,7 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
         html: HTML content of listing page
         base_url: Base URL for resolving relative links
         seen_skus: Set of SKUs already encountered (for deduplication)
+        category_url: Category URL for room type extraction (optional)
 
     Returns:
         List of product dictionaries
@@ -149,13 +152,18 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
 
             # Only add if we have at least a SKU
             if sku:
+                # Categorize product
+                categorization = categorize_product(name, category_url)
+
                 product_data = {
                     "name": name,
                     "sku": sku,
                     "img_url": img_url,
                     "product_url": product_url,
                     "price": None,  # No price available
-                    "in_stock": None  # No stock status available
+                    "in_stock": None,  # No stock status available
+                    "room_types": categorization['room_types'],
+                    "product_type": categorization['product_type']
                 }
 
                 products.append(product_data)
@@ -190,7 +198,7 @@ def scrape_type_id(driver, type_id: int, seen_skus: Set[str]) -> List[Dict]:
         print(f"  ✗ Failed to fetch page for TypeID {type_id}")
         return []
 
-    products = extract_products_from_listing_page(html, BASE_URL, seen_skus)
+    products = extract_products_from_listing_page(html, BASE_URL, seen_skus, url)
     print(f"  Total products from TypeID {type_id}: {len(products)}")
 
     return products

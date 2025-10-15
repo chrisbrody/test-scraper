@@ -62,14 +62,22 @@ def infer_product_type_from_name(product_name: str) -> Optional[str]:
 
     name_lower = product_name.lower()
 
-    # Try to match against product type keywords
-    # Sort by keyword length (descending) to match longer phrases first
+    # Build a list of (product_type_name, keyword, keyword_length) tuples
+    # Sort by keyword length (descending) to match longer, more specific phrases first
+    keyword_matches = []
     for product_type in PRODUCT_TYPES:
-        for keyword in sorted(product_type['keywords'], key=len, reverse=True):
-            # Use word boundaries to avoid partial matches
-            pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
-            if re.search(pattern, name_lower):
-                return product_type['name']
+        for keyword in product_type['keywords']:
+            keyword_matches.append((product_type['name'], keyword, len(keyword)))
+
+    # Sort by keyword length in descending order (longest first)
+    keyword_matches.sort(key=lambda x: x[2], reverse=True)
+
+    # Try to match against product type keywords
+    for product_type_name, keyword, _ in keyword_matches:
+        # Use word boundaries to avoid partial matches
+        pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+        if re.search(pattern, name_lower):
+            return product_type_name
 
     return None
 
