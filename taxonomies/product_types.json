@@ -18,12 +18,22 @@
     {
       "id": "chair",
       "name": "Chair",
-      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair", "swivel rocker", "rocker"]
+      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair", "swivel rocker", "rocker", "swivel", "bergere", "recliner"]
     },
     {
       "id": "table",
       "name": "Table",
-      "keywords": ["dining table", "center table", "coffee table", "console table", "hall table", "center hall table", "book table", "pedestal table", "martini table", "spot table", "table"]
+      "keywords": ["dining table", "center table", "coffee table", "cocktail table", "hall table", "center hall table", "book table", "pedestal table", "martini table", "spot table", "game table", "gathering table", "refectory table", "trestle table", "oval table", "round table", "rectangular table", "square table", "table"]
+    },
+    {
+      "id": "console",
+      "name": "Console",
+      "keywords": ["console", "console table", "credenza"]
+    },
+    {
+      "id": "stool",
+      "name": "Stool",
+      "keywords": ["stool", "bar stool", "counter stool"]
     },
     {
       "id": "side_table",
@@ -48,27 +58,37 @@
     {
       "id": "dresser",
       "name": "Dresser",
-      "keywords": ["dresser", "chest of drawers", "bureau", "chairside chest", "drawer chest", "door chest"]
+      "keywords": ["dresser", "chest of drawers", "bureau", "chairside chest", "drawer chest", "door chest", "chest"]
     },
     {
       "id": "cabinet",
       "name": "Cabinet",
-      "keywords": ["cabinet", "cupboard", "armoire", "wardrobe", "deed box", "file chest"]
+      "keywords": ["cabinet", "cupboard", "armoire", "wardrobe", "deed box", "file chest", "display cabinet", "sideboard", "buffet"]
     },
     {
       "id": "bookcase",
       "name": "Bookcase",
-      "keywords": ["bookcase", "bookshelf", "shelving", "etagere"]
+      "keywords": ["bookcase", "bookshelf", "shelving", "etagere", "display case"]
+    },
+    {
+      "id": "bar_cart",
+      "name": "Bar Cart",
+      "keywords": ["bar cart", "bar", "cart"]
     },
     {
       "id": "ottoman",
       "name": "Ottoman",
-      "keywords": ["ottoman", "pouf", "footstool", "otto", "chaise", "chaise lounge"]
+      "keywords": ["ottoman", "pouf", "footstool", "otto", "chaise", "chaise lounge", "hassock"]
     },
     {
       "id": "bench",
       "name": "Bench",
-      "keywords": ["bench", "settee"]
+      "keywords": ["bench"]
+    },
+    {
+      "id": "settee",
+      "name": "Settee",
+      "keywords": ["settee", "banquette", "tête-à-tête", "tete-a-tete", "tete a tete"]
     },
     {
       "id": "chandelier",
@@ -116,9 +136,24 @@
       "keywords": ["tier table", "tiered table", "nest of tables"]
     },
     {
+      "id": "accent",
+      "name": "Accent",
+      "keywords": ["accent", "tray", "accessory", "decor"]
+    },
+    {
+      "id": "table_base",
+      "name": "Table Base",
+      "keywords": ["pedestal base", "table base", "base only"]
+    },
+    {
+      "id": "deck",
+      "name": "Deck",
+      "keywords": ["deck", "deck only", "cushion deck"]
+    },
+    {
       "id": "other",
       "name": "Other",
-      "keywords": ["accessory", "decor", "miscellaneous"]
+      "keywords": ["miscellaneous"]
     }
   ]
 }

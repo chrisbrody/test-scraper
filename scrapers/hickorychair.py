@@ -2,6 +2,45 @@
 Hickory Chair Product Scraper
 Scrapes product data from Hickory Chair listing pages using traditional HTML parsing.
 No pagination needed - single page per TypeID.
+
+
+Living Room Ids
+Sofa & loveseats-79
+settes & banquettes-48
+sectionals-14
+chairs & chaises-81
+ottomans & benches-76
+cocktail tables-subid=42
+side tables-subid=78
+center tables & game tables-subid=942,79
+desk & consoles-34,72
+bookcases & display cabinets-subid=92,57
+bar & bar carts-70
+mirrors, trays & accents-subid=17,1507,130
+lighting-132
+
+Dining Room Ids
+dining tables-74
+center tables-subid=942
+dining chairs-73
+settes & banquettes-48
+bar & counter stools-61
+chests-32
+consoles & credenzas-subid=61
+bar & bar carts-70
+bookcases & display cabinets-subid=92,57
+mirrors, trays & accents-subid=17,1507,130
+
+BedRoom Ids
+beds-25
+dressers-29
+chests-32
+nightstands & bedside tables-subid=82
+chairs & chaises-81
+mirrors, trays & accents-subid=17,1507,130
+lighting-132
+
+Outdoor - different than the rest - https://www.hickorychair.com/products/showresults?CollectionID=G3
 """
 
 import json
@@ -29,10 +68,47 @@ except ImportError:
 # --- Configuration ---
 BASE_URL = "https://www.hickorychair.com"
 
-# TypeIDs to scrape - User should update this array
-TYPE_IDS = [ 
-    14,48,79, 
-    # Add more TypeIDs here as needed
+# Category configurations with room type and IDs to scrape
+# Format: {"name": "Category Name", "room_type": "Room Type", "ids": "TypeID or SubTypeID value", "is_subtype": True/False, "is_collection": True/False}
+CATEGORIES = [
+    # Living Room
+    {"name": "Sofas & Loveseats", "room_type": "Living Room", "ids": "79", "is_subtype": False, "is_collection": False},
+    {"name": "Settees & Banquettes", "room_type": "Living Room", "ids": "48", "is_subtype": False, "is_collection": False},
+    {"name": "Sectionals", "room_type": "Living Room", "ids": "14", "is_subtype": False, "is_collection": False},
+    {"name": "Chairs & Chaises", "room_type": "Living Room", "ids": "81", "is_subtype": False, "is_collection": False},
+    {"name": "Ottomans & Benches", "room_type": "Living Room", "ids": "76", "is_subtype": False, "is_collection": False},
+    {"name": "Cocktail Tables", "room_type": "Living Room", "ids": "42", "is_subtype": True, "is_collection": False},
+    {"name": "Side Tables", "room_type": "Living Room", "ids": "78", "is_subtype": True, "is_collection": False},
+    {"name": "Center Tables & Game Tables", "room_type": "Living Room", "ids": "942,79", "is_subtype": True, "is_collection": False},
+    {"name": "Desks & Consoles", "room_type": "Living Room", "ids": "34,72", "is_subtype": False, "is_collection": False},
+    {"name": "Bookcases & Display Cabinets", "room_type": "Living Room", "ids": "92,57", "is_subtype": True, "is_collection": False},
+    {"name": "Bar & Bar Carts", "room_type": "Living Room", "ids": "70", "is_subtype": False, "is_collection": False},
+    {"name": "Mirrors, Trays & Accents", "room_type": "Living Room", "ids": "17,1507,130", "is_subtype": True, "is_collection": False},
+    {"name": "Lighting", "room_type": "Living Room", "ids": "132", "is_subtype": False, "is_collection": False},
+
+    # Dining Room
+    {"name": "Dining Tables", "room_type": "Dining Room", "ids": "74", "is_subtype": False, "is_collection": False},
+    {"name": "Center Tables", "room_type": "Dining Room", "ids": "942", "is_subtype": True, "is_collection": False},
+    {"name": "Dining Chairs", "room_type": "Dining Room", "ids": "73", "is_subtype": False, "is_collection": False},
+    {"name": "Settees & Banquettes", "room_type": "Dining Room", "ids": "48", "is_subtype": False, "is_collection": False},
+    {"name": "Bar & Counter Stools", "room_type": "Dining Room", "ids": "61", "is_subtype": False, "is_collection": False},
+    {"name": "Chests", "room_type": "Dining Room", "ids": "32", "is_subtype": False, "is_collection": False},
+    {"name": "Consoles & Credenzas", "room_type": "Dining Room", "ids": "61", "is_subtype": True, "is_collection": False},
+    {"name": "Bar & Bar Carts", "room_type": "Dining Room", "ids": "70", "is_subtype": False, "is_collection": False},
+    {"name": "Bookcases & Display Cabinets", "room_type": "Dining Room", "ids": "92,57", "is_subtype": True, "is_collection": False},
+    {"name": "Mirrors, Trays & Accents", "room_type": "Dining Room", "ids": "17,1507,130", "is_subtype": True, "is_collection": False},
+
+    # Bedroom
+    {"name": "Beds", "room_type": "Bedroom", "ids": "25", "is_subtype": False, "is_collection": False},
+    {"name": "Dressers", "room_type": "Bedroom", "ids": "29", "is_subtype": False, "is_collection": False},
+    {"name": "Chests", "room_type": "Bedroom", "ids": "32", "is_subtype": False, "is_collection": False},
+    {"name": "Nightstands & Bedside Tables", "room_type": "Bedroom", "ids": "82", "is_subtype": True, "is_collection": False},
+    {"name": "Chairs & Chaises", "room_type": "Bedroom", "ids": "81", "is_subtype": False, "is_collection": False},
+    {"name": "Mirrors, Trays & Accents", "room_type": "Bedroom", "ids": "17,1507,130", "is_subtype": True, "is_collection": False},
+    {"name": "Lighting", "room_type": "Bedroom", "ids": "132", "is_subtype": False, "is_collection": False},
+
+    # Outdoor (uses CollectionID instead of TypeID/SubTypeID)
+    {"name": "Outdoor Furniture", "room_type": "Outdoor", "ids": "G3", "is_subtype": False, "is_collection": True},
 ]
 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
@@ -99,21 +175,23 @@ def fetch_page_with_selenium(driver, url: str, wait_for_selector: str = None) ->
         return None
 
 
-def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[str], category_url: str = None) -> List[Dict]:
+def extract_products_from_listing_page(html: str, base_url: str, products_by_sku: Dict[str, Dict], category_url: str = None, category_name: str = None, room_type: str = None) -> List[Dict]:
     """
     Extract product data from a listing page HTML.
 
     Args:
         html: HTML content of listing page
         base_url: Base URL for resolving relative links
-        seen_skus: Set of SKUs already encountered (for deduplication)
+        products_by_sku: Dictionary mapping SKUs to product data (for deduplication and room merging)
         category_url: Category URL for room type extraction (optional)
+        category_name: Category name for product type inference (optional)
+        room_type: Explicit room type to add to this product (optional)
 
     Returns:
-        List of product dictionaries
+        List of product dictionaries (newly found in this page)
     """
     soup = BeautifulSoup(html, 'html.parser')
-    products = []
+    new_products = []
 
     # Find all product items
     product_items = soup.select(PRODUCT_ITEM_SELECTOR)
@@ -131,9 +209,16 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
             sku_elem = item.select_one(PRODUCT_SKU_SELECTOR)
             sku = sku_elem.get_text(strip=True) if sku_elem else ''
 
-            # Skip if we've already seen this SKU
-            if sku in seen_skus:
-                print(f"  ⚠ Skipping duplicate SKU: {sku}")
+            if not sku:
+                continue
+
+            # Check if we've already seen this SKU
+            if sku in products_by_sku:
+                # Product exists - merge room types
+                existing_product = products_by_sku[sku]
+                if room_type and room_type not in existing_product['room_types']:
+                    existing_product['room_types'].append(room_type)
+                    print(f"  [~] Updated {sku} - added room: {room_type}")
                 continue
 
             # Extract name
@@ -150,58 +235,87 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
                 if not name:
                     name = img_elem.get('alt', '')
 
-            # Only add if we have at least a SKU
-            if sku:
-                # Categorize product
-                categorization = categorize_product(name, category_url)
+            # Categorize product with category name for better inference
+            categorization = categorize_product(name, category_url, category_name)
 
-                product_data = {
-                    "name": name,
-                    "sku": sku,
-                    "img_url": img_url,
-                    "product_url": product_url,
-                    "price": None,  # No price available
-                    "in_stock": None,  # No stock status available
-                    "room_types": categorization['room_types'],
-                    "product_type": categorization['product_type']
-                }
+            # Use explicit room_type if provided, otherwise use categorization
+            room_types = [room_type] if room_type else categorization['room_types']
 
-                products.append(product_data)
-                seen_skus.add(sku)
-                print(f"  ✓ Found: {sku} - {name}")
+            product_data = {
+                "name": name,
+                "sku": sku,
+                "img_url": img_url,
+                "product_url": product_url,
+                "price": None,  # No price available
+                "in_stock": None,  # No stock status available
+                "room_types": room_types,
+                "product_type": categorization['product_type']
+            }
+
+            products_by_sku[sku] = product_data
+            new_products.append(product_data)
+            print(f"  [+] Found: {sku} - {name}")
 
         except Exception as e:
-            print(f"  ✗ Error extracting product from item: {e}")
+            print(f"  [-] Error extracting product from item: {e}")
             continue
 
-    return products
+    return new_products
 
 
-def scrape_type_id(driver, type_id: int, seen_skus: Set[str]) -> List[Dict]:
+def build_category_url(category: Dict) -> str:
     """
-    Scrape all products from a single TypeID listing page.
+    Build URL based on category configuration.
+
+    Args:
+        category: Category dictionary with 'ids', 'is_subtype', and 'is_collection' keys
+
+    Returns:
+        Full URL for the category
+    """
+    ids = category['ids']
+    is_subtype = category['is_subtype']
+    is_collection = category.get('is_collection', False)
+
+    if is_collection:
+        return f"{BASE_URL}/Products/ShowResults?CollectionID={ids}"
+    elif is_subtype:
+        return f"{BASE_URL}/Products/ShowResults?SubTypeID={ids}"
+    else:
+        return f"{BASE_URL}/Products/ShowResults?TypeID={ids}"
+
+
+def scrape_category(driver, category: Dict, products_by_sku: Dict[str, Dict]) -> int:
+    """
+    Scrape all products from a single category listing page.
 
     Args:
         driver: Selenium WebDriver instance
-        type_id: TypeID to scrape
-        seen_skus: Set of SKUs already encountered (for deduplication)
+        category: Category dictionary with name, room_type, ids, and is_subtype
+        products_by_sku: Dictionary mapping SKUs to product data (for deduplication and room merging)
 
     Returns:
-        List of product dictionaries
+        Number of new products found in this category
     """
-    url = f"{BASE_URL}/Products/ShowResults?TypeID={type_id}"
-    print(f"\nScraping TypeID {type_id}: {url}")
+    url = build_category_url(category)
+    category_name = category['name']
+    room_type = category['room_type']
+
+    print(f"\nScraping {category_name} ({room_type}): {url}")
 
     html = fetch_page_with_selenium(driver, url, wait_for_selector=PRODUCT_ITEM_SELECTOR)
 
     if not html:
-        print(f"  ✗ Failed to fetch page for TypeID {type_id}")
-        return []
+        print(f"  [-] Failed to fetch page for {category_name}")
+        return 0
 
-    products = extract_products_from_listing_page(html, BASE_URL, seen_skus, url)
-    print(f"  Total products from TypeID {type_id}: {len(products)}")
+    # Pass category name and room type for better categorization
+    new_products = extract_products_from_listing_page(html, BASE_URL, products_by_sku, url, category_name, room_type)
 
-    return products
+    print(f"  New products from {category_name}: {len(new_products)}")
+    print(f"  Total unique products so far: {len(products_by_sku)}")
+
+    return len(new_products)
 
 
 def scrape(num_pages=None, max_products=None):
@@ -209,7 +323,7 @@ def scrape(num_pages=None, max_products=None):
     Main scraping function that matches the interface of other scrapers.
 
     Args:
-        num_pages: Not used for Hickory Chair (scrapes all TypeIDs)
+        num_pages: Not used for Hickory Chair (scrapes all categories)
         max_products: Maximum number of products to scrape before stopping
 
     Returns:
@@ -220,34 +334,43 @@ def scrape(num_pages=None, max_products=None):
     print("=" * 80)
     print("Hickory Chair Product Scraper")
     print("=" * 80)
-    print(f"Scraping {len(TYPE_IDS)} TypeIDs: {TYPE_IDS}")
+    print(f"Scraping {len(CATEGORIES)} categories")
+    print("\nCategory URLs:")
+    for i, category in enumerate(CATEGORIES, 1):
+        url = build_category_url(category)
+        print(f"  {i}. {category['name']} ({category['room_type']})")
+        print(f"     {url}")
 
     # Ensure output directory exists
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    all_products = []
-    seen_skus = set()  # Track SKUs to prevent duplicates
+    products_by_sku = {}  # Track products by SKU, allowing room type merging
 
     # Create Selenium driver
     driver = create_driver()
 
     try:
-        for type_id in TYPE_IDS:
-            type_products = scrape_type_id(driver, type_id, seen_skus)
-            all_products.extend(type_products)
+        for category in CATEGORIES:
+            new_count = scrape_category(driver, category, products_by_sku)
 
             # Check if we've hit max_products limit
-            if max_products and len(all_products) >= max_products:
-                print(f"\n⚠ Reached max_products limit ({max_products}), stopping")
-                all_products = all_products[:max_products]
+            if max_products and len(products_by_sku) >= max_products:
+                print(f"\n[!] Reached max_products limit ({max_products}), stopping")
                 break
 
     finally:
         driver.quit()
 
+    # Convert dictionary to list
+    all_products = list(products_by_sku.values())
+
+    # Trim to max_products if needed
+    if max_products and len(all_products) > max_products:
+        all_products = all_products[:max_products]
+
     print(f"\n{'=' * 80}")
     print(f"Total unique products scraped: {len(all_products)}")
-    print(f"Total unique SKUs: {len(seen_skus)}")
+    print(f"Total unique SKUs: {len(products_by_sku)}")
     print("=" * 80)
 
     # Save to JSON file (backup)
@@ -257,7 +380,7 @@ def scrape(num_pages=None, max_products=None):
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(all_products, f, indent=2, ensure_ascii=False)
 
-    print(f"✓ Backup saved to: {output_path}")
+    print(f"[+] Backup saved to: {output_path}")
 
     # Sync to Supabase
     print("\n" + "=" * 80)

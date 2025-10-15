@@ -114,13 +114,92 @@ def infer_room_types_from_product_type(product_type: str) -> List[str]:
     return product_to_rooms.get(product_type, ["Multi-Purpose"])
 
 
-def categorize_product(product_name: str, category_url: str = None) -> dict:
+def infer_product_type_from_category_name(category_name: str) -> Optional[str]:
     """
-    Categorize a product based on its name and optional category URL.
+    Infer product type from a category name (e.g., from TypeID or SubTypeID metadata).
+
+    Args:
+        category_name: Category name (e.g., "sofas_loveseats", "dining_tables", "cocktail_tables")
+
+    Returns:
+        Product type name (e.g., "Sofa", "Table") or None if not found
+    """
+    if not category_name:
+        return None
+
+    category_lower = category_name.lower()
+
+    # Mapping of category keywords to product types
+    # Ordered by specificity (most specific first to avoid false matches)
+    category_to_product_type = [
+        # Most specific matches first
+        ("nightstand", "Nightstand"),
+        ("bedside", "Nightstand"),
+        ("dining table", "Table"),  # Hickory Chair format (space-separated)
+        ("dining_table", "Table"),
+        ("cocktail table", "Table"),  # Hickory Chair format
+        ("cocktail_table", "Table"),
+        ("side table", "Side Table"),  # Hickory Chair format
+        ("side_table", "Side Table"),
+        ("center table", "Table"),  # Hickory Chair format
+        ("center_table", "Table"),
+        ("game table", "Table"),  # Hickory Chair format
+        ("game_table", "Table"),
+        ("sofa & loveseat", "Sofa"),  # Hickory Chair format
+        ("sofas_loveseat", "Sofa"),  # Handle compound categories
+        ("loveseat", "Loveseat"),
+        ("sectional", "Sofa"),
+        ("settee", "Settee"),
+        ("banquette", "Settee"),
+        ("chair & chaise", "Chair"),  # Hickory Chair format
+        ("chairs_chaise", "Chair"),  # Plural form for category
+        ("chaise", "Ottoman"),
+        ("ottoman", "Ottoman"),
+        ("bench", "Bench"),
+        ("desk & console", "Desk"),  # Hickory Chair format (prioritize desk)
+        ("desk", "Desk"),
+        ("console & credenza", "Console"),  # Hickory Chair format
+        ("console", "Console"),
+        ("credenza", "Console"),
+        ("dresser", "Dresser"),
+        ("bar cart", "Bar Cart"),  # Hickory Chair format
+        ("bar_cart", "Bar Cart"),
+        ("bar", "Bar Cart"),
+        ("bookcase & display", "Bookcase"),  # Hickory Chair format
+        ("bookcase", "Bookcase"),
+        ("display cabinet", "Cabinet"),  # Hickory Chair format
+        ("display", "Cabinet"),
+        ("mirror", "Mirror"),
+        ("accent", "Accent"),
+        ("tray", "Accent"),
+        ("lighting", "Table Lamp"),
+        ("counter stool", "Stool"),  # Hickory Chair format
+        ("bar stool", "Stool"),  # Hickory Chair format
+        ("stool", "Stool"),
+        ("chest", "Dresser"),
+        # Less specific matches last
+        ("bed", "Bed"),  # Keep "bed" last so it doesn't match "bedside"
+        ("chair", "Chair"),
+        ("sofa", "Sofa"),
+        ("table", "Table"),  # Generic table match last
+    ]
+
+    # Try to match category name against mappings (in order)
+    for keyword, product_type in category_to_product_type:
+        if keyword in category_lower:
+            return product_type
+
+    return None
+
+
+def categorize_product(product_name: str, category_url: str = None, category_name: str = None) -> dict:
+    """
+    Categorize a product based on its name, optional category URL, and optional category name.
 
     Args:
         product_name: Product name
         category_url: Optional category URL
+        category_name: Optional category name (e.g., from TypeID metadata)
 
     Returns:
         Dictionary with 'room_types' (list) and 'product_type' (str or None)
@@ -134,8 +213,13 @@ def categorize_product(product_name: str, category_url: str = None) -> dict:
         if room_from_url:
             room_types.append(room_from_url)
 
-    # Infer product type from name
-    product_type = infer_product_type_from_name(product_name)
+    # Try to infer product type from category name first (most reliable)
+    if category_name:
+        product_type = infer_product_type_from_category_name(category_name)
+
+    # If not found, infer product type from product name
+    if not product_type:
+        product_type = infer_product_type_from_name(product_name)
 
     # If no room type from URL, infer from product type
     if not room_types and product_type:

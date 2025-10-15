@@ -14,7 +14,8 @@
       "Bash(git rm:*)",
       "Bash(git checkout:*)",
       "Bash(mkdir:*)",
-      "WebFetch(domain:www.sherrillfurniture.com)"
+      "WebFetch(domain:www.sherrillfurniture.com)",
+      "Bash(del test_hickory_urls.py)"
     ],
     "deny": [],
     "ask": []
