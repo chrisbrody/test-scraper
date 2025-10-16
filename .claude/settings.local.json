@@ -16,7 +16,8 @@
       "Bash(mkdir:*)",
       "WebFetch(domain:www.sherrillfurniture.com)",
       "Bash(del test_hickory_urls.py)",
-      "WebFetch(domain:hvlgroup.com)"
+      "WebFetch(domain:hvlgroup.com)",
+      "WebFetch(domain:rowefurniture.com)"
     ],
     "deny": [],
     "ask": []
