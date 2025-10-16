@@ -1,7 +1,7 @@
 """
 Hickory Chair Product Scraper
 Scrapes product data from Hickory Chair listing pages using traditional HTML parsing.
-No pagination needed - single page per TypeID.
+Pagination needed - single page per TypeID.
 
 
 Living Room Ids

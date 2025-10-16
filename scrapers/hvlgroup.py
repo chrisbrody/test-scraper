@@ -125,39 +125,39 @@ def scrape(room_configs=None, max_products=None):
         room_configs = [
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=3238&CurrentPageId=31&pageNumber=1",
-                "num_pages": 1  #pages:54 Bedroom
+                "num_pages": 54  #pages:54 Bedroom
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=1201&CurrentPageId=32&pageNumber=1",
-                "num_pages": 1  #pages:21 Bathroom
+                "num_pages": 21  #pages:21 Bathroom
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=4117&CurrentPageId=33&pageNumber=1",
-                "num_pages": 1  #pages:69 Dining Room
+                "num_pages": 69  #pages:69 Dining Room
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=3516&CurrentPageId=34&pageNumber=1",
-                "num_pages": 1  #pages:59 Entrance
+                "num_pages": 59  #pages:59 Entrance
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=2469&CurrentPageId=35&pageNumber=1",
-                "num_pages": 1  #pages:42 Hallway
+                "num_pages": 42  #pages:42 Hallway
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=1775&CurrentPageId=36&pageNumber=1",
-                "num_pages": 1  #pages:30 Kitchen
+                "num_pages": 30  #pages:30 Kitchen
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=3332&CurrentPageId=37&pageNumber=1",
-                "num_pages": 1  #pages:56 Living Room
+                "num_pages": 56  #pages:56 Living Room
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=767&CurrentPageId=5007&pageNumber=1",
-                "num_pages": 1  #pages:13 Exterior
+                "num_pages": 13  #pages:13 Exterior
             },
             {
                 "url": "https://hvlgroup.com/Products/Paging?PageSize=60&TotalObjectCount=1413&CurrentPageId=1791&pageNumber=1",
-                "num_pages": 1  #pages:24 Office
+                "num_pages": 24  #pages:24 Office
             }
         ]
 

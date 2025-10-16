@@ -55,10 +55,98 @@ API_ENDPOINTS = [
             "retailerId": "*",
             "skip": "0",
             "tagCriteria": '{"RoomType":["Bedroom"],"$MultiView":["Yes"]}',
-            "take": "390"
+            "take": "395"
         },
         "category_url": "https://www.bernhardt.com/products/luxury-bedroom-furniture",
-        "pages": 9
+        "pages": 9 # 9 total
+    },
+    {
+        "name": "Dining",
+        "url": "https://www.bernhardt.com/service/QueryBernhardtProducts.json",
+        "params": {
+            "op": "ProductQuery1.4",
+            "IncludeTagShards": "MultiViewPriceRange",
+            "JsConfig": "ExcludeDefaultValues",
+            "IncludeTagKinds": "Express Ship,InStock,NewIntroductions,BedSizes",
+            "Fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "$clear": "false",
+            "context": "shop",
+            "fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "include": "Total",
+            "orderBy": "DiningPosition",
+            "retailerId": "*",
+            "skip": "0",
+            "tagCriteria": '{"RoomType":["Dining"],"$MultiView":["Yes"]}',
+            "take": "336"
+        },
+        "category_url": "https://www.bernhardt.com/products/luxury-dining-room-furniture",
+        "pages": 7 # 7 total
+    },
+    {
+        "name": "Living",
+        "url": "https://www.bernhardt.com/service/QueryBernhardtProducts.json",
+        "params": {
+            "op": "ProductQuery1.4",
+            "IncludeTagShards": "MultiViewPriceRange",
+            "JsConfig": "ExcludeDefaultValues",
+            "IncludeTagKinds": "Express Ship,InStock,NewIntroductions,BedSizes",
+            "Fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "$clear": "false",
+            "context": "shop",
+            "fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "include": "Total",
+            "orderBy": "LivingPosition",
+            "retailerId": "*",
+            "skip": "0",
+            "tagCriteria": '{"RoomType":["Living"],"$MultiView":["Yes"]}',
+            "take": "1072"
+        },
+        "category_url": "https://www.bernhardt.com/products/luxury-living-room-furniture",
+        "pages": 23 # 23 total
+    },
+    {
+        "name": "Workspace",
+        "url": "https://www.bernhardt.com/service/QueryBernhardtProducts.json",
+        "params": {
+            "op": "ProductQuery1.4",
+            "IncludeTagShards": "MultiViewPriceRange",
+            "JsConfig": "ExcludeDefaultValues",
+            "IncludeTagKinds": "Express Ship,InStock,NewIntroductions,BedSizes",
+            "Fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "$clear": "false",
+            "context": "shop",
+            "fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "include": "Total",
+            "orderBy": "WorkspacePosition",
+            "retailerId": "*",
+            "skip": "0",
+            "tagCriteria": '{"RoomType":["Workspace"],"$MultiView":["Yes"]}',
+            "take": "49"
+        },
+        "category_url": "https://www.bernhardt.com/products/luxury-home-office-room-furniture",
+        "pages": 2 #  2 total
+    },
+    {
+        "name": "Outdoor",
+        "url": "https://www.bernhardt.com/service/QueryBernhardtProducts.json",
+        "params": {
+            "op": "ProductQuery1.4",
+            "IncludeTagShards": "MultiViewPriceRange",
+            "JsConfig": "ExcludeDefaultValues",
+            "IncludeTagKinds": "Express Ship,InStock,NewIntroductions,BedSizes",
+            "Fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "$clear": "false",
+            "context": "shop",
+            "fields": "Id,ShortDescription,Price,WholesalePrice,Category,ManufacturerNumber,OptionGroup,MinimumOrderQty,PurchaseIncrement,AvailableQty,ProductTags,isNew,IntroducedOn",
+            "include": "Total",
+            "orderBy": "OutdoorPosition",
+            "retailerId": "*",
+            "skip": "0",
+            "tagCriteria": '{"RoomType":["Outdoor"],"$MultiView":["Yes"]}',
+            "take": "484"
+        },
+        "category_url": "https://www.bernhardt.com/products/luxury-outdoor-furniture",
+        "pages": 11 # 11 total
     },
     # Add more categories as needed:
     # {

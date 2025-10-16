@@ -6,6 +6,11 @@
       "keywords": ["bed", "canopy bed", "panel bed", "platform bed", "sleigh bed", "upholstered bed", "king", "queen"]
     },
     {
+      "id": "headboard",
+      "name": "Headboard",
+      "keywords": ["headboard", "upholstered headboard"]
+    },
+    {
       "id": "sofa",
       "name": "Sofa",
       "keywords": ["sofa", "couch", "sectional", "corner sofa", "laf sofa", "raf sofa", "bumper", "curved corner", "wedge corner", "corner unit", "armless unit", "banquette", "m2m", "made to measure", "raf unit", "square corner", "lounge", "divan", "tete-a-tete", "bistro", "unit with"]
@@ -23,17 +28,17 @@
     {
       "id": "table",
       "name": "Table",
-      "keywords": ["dining table", "center table", "coffee table", "cocktail table", "hall table", "center hall table", "book table", "pedestal table", "martini table", "spot table", "game table", "gathering table", "refectory table", "trestle table", "oval table", "round table", "rectangular table", "square table", "table"]
+      "keywords": ["dining table", "center table", "coffee table", "cocktail table", "cocktail", "bunching cocktail", "hall table", "center hall table", "book table", "pedestal table", "martini table", "spot table", "game table", "gathering table", "refectory table", "trestle table", "oval table", "round table", "rectangular table", "square table", "table"]
     },
     {
       "id": "console",
       "name": "Console",
-      "keywords": ["console", "console table", "credenza"]
+      "keywords": ["console", "console table", "credenza", "demilune"]
     },
     {
       "id": "stool",
       "name": "Stool",
-      "keywords": ["stool", "bar stool", "counter stool"]
+      "keywords": ["stool", "bar stool", "counter stool", "barstool", "counterstool"]
     },
     {
       "id": "side_table",
@@ -48,7 +53,7 @@
     {
       "id": "nightstand",
       "name": "Nightstand",
-      "keywords": ["nightstand", "bedside table", "bedside", "night stand"]
+      "keywords": ["nightstand", "bedside table", "bedside", "bedsidetable", "night stand"]
     },
     {
       "id": "desk",
@@ -76,14 +81,19 @@
       "keywords": ["bar cart", "bar", "cart"]
     },
     {
+      "id": "chaise",
+      "name": "Chaise",
+      "keywords": ["chaise", "chaise lounge", "chaise longue", "daybed"]
+    },
+    {
       "id": "ottoman",
       "name": "Ottoman",
-      "keywords": ["ottoman", "pouf", "footstool", "otto", "chaise", "chaise lounge", "hassock"]
+      "keywords": ["ottoman", "pouf", "footstool", "otto", "hassock", "cube"]
     },
     {
       "id": "bench",
       "name": "Bench",
-      "keywords": ["bench"]
+      "keywords": ["bench", "window seat"]
     },
     {
       "id": "settee",
@@ -136,6 +146,26 @@
       "keywords": ["tier table", "tiered table", "nest of tables"]
     },
     {
+      "id": "vanity",
+      "name": "Vanity",
+      "keywords": ["vanity", "makeup vanity", "dressing table", "makeup table"]
+    },
+    {
+      "id": "trunk",
+      "name": "Trunk",
+      "keywords": ["trunk", "storage trunk", "keepsake trunk"]
+    },
+    {
+      "id": "umbrella_stand",
+      "name": "Umbrella Stand",
+      "keywords": ["umbrella stand"]
+    },
+    {
+      "id": "firewood_holder",
+      "name": "Firewood Holder",
+      "keywords": ["firewood case", "firewood holder", "log holder"]
+    },
+    {
       "id": "accent",
       "name": "Accent",
       "keywords": ["accent", "tray", "accessory", "decor"]
@@ -154,6 +184,11 @@
       "id": "deck",
       "name": "Deck",
       "keywords": ["deck", "deck only", "cushion deck"]
+    },
+    {
+      "id": "outdoor_cover",
+      "name": "Outdoor Cover",
+      "keywords": ["cover", "outdoor cover", "furniture cover", "stool cover", "chair cover", "sofa cover", "table cover", "panel cover"]
     },
     {
       "id": "other",
