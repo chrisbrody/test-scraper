@@ -24,14 +24,118 @@ from selenium.common.exceptions import TimeoutException
 # Handle both direct execution and module import
 try:
     from .categorization_utils import categorize_product
+    from .supabase_utils import sync_products_to_supabase
 except ImportError:
     from categorization_utils import categorize_product
+    from supabase_utils import sync_products_to_supabase
 
 # --- Configuration ---
 BASE_URL = "https://rowefurniture.com"
 
 # Category configurations with URL and categorization rules
 CATEGORIES = [
+    {
+        "name": "Sofas & Sectionals",
+        "url": f"{BASE_URL}/sofas-sectionals",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Chairs & Ottomans",
+        "url": f"{BASE_URL}/chairs-ottomans",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "End & Spot Tables",
+        "url": f"{BASE_URL}/spot-end-tables",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Cocktail Tables",
+        "url": f"{BASE_URL}/cocktail-tables",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Console Tables & Credenzas",
+        "url": f"{BASE_URL}/credenza-console-tables",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Reclining Chairs",
+        "url": f"{BASE_URL}/reclining-chairs",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Sleepers",
+        "url": f"{BASE_URL}/sleepers",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Swivel Chairs",
+        "url": f"{BASE_URL}/swivel-chairs-gliders",
+        "room_types": ["Living Room"],
+    },
+    {
+        "name": "Beds",
+        "url": f"{BASE_URL}/custom-beds",
+        "room_types": ["Bedroom"],
+    },
+    {
+        "name": "Daybeds",
+        "url": f"{BASE_URL}/daybeds",
+        "room_types": ["Bedroom"],
+    },
+    {
+        "name": "Bedroom Chairs",
+        "url": f"{BASE_URL}/chaise-chairs",
+        "room_types": ["Bedroom"],
+    },
+    {
+        "name": "Bedroom Chests",
+        "url": f"{BASE_URL}/chests",
+        "room_types": ["Bedroom"],
+    },
+    {
+        "name": "Nightstands",
+        "url": f"{BASE_URL}/nightstands",
+        "room_types": ["Bedroom"],
+    },
+    {
+        "name": "Bedroom Bench",
+        "url": f"{BASE_URL}/bedroom-bench",
+        "room_types": ["Bedroom"],
+    },
+    {
+        "name": "Dining Tables",
+        "url": f"{BASE_URL}/dining-tables",
+        "room_types": ["Dining Room"],
+    },
+    {
+        "name": "Dining Chairs & Banquettes",
+        "url": f"{BASE_URL}/dining-chairs-banquettes",
+        "room_types": ["Dining Room"],
+    },
+    {
+        "name": "Sideboards",
+        "url": f"{BASE_URL}/sideboards",
+        "room_types": ["Dining Room"],
+    },
+    {
+        "name": "Counter & Bar Stools",
+        "url": f"{BASE_URL}/stools",
+        "room_types": ["Dining Room"],
+    },
+    {
+        "name": "Office Desks",
+        "url": f"{BASE_URL}/desks",
+        "room_types": ["Office"],
+        "product_type_override": "Desk",
+    },
+    {
+        "name": "Office Chairs",
+        "url": f"{BASE_URL}/office-chairs",
+        "room_types": ["Office", "Dining Room"],
+        "product_type_override": "Chair",
+    },
     {
         "name": "Office Storage",
         "url": f"{BASE_URL}/storage",
@@ -43,24 +147,6 @@ CATEGORIES = [
             "bookcase": "Bookcase",
             "shelf": "Bookcase",
         }
-    },
-    {
-        "name": "Office Chairs",
-        "url": f"{BASE_URL}/office-chairs",
-        "room_types": ["Office", "Dining Room"],
-        "product_type_override": "Chair",
-    },
-    {
-        "name": "Office Desks",
-        "url": f"{BASE_URL}/desks",
-        "room_types": ["Office"],
-        "product_type_override": "Desk",
-    },
-    {
-        "name": "Dining Chairs & Banquettes",
-        "url": f"{BASE_URL}/dining-chairs-banquettes",
-        "room_types": ["Dining Room"],
-        # No override - let categorization detect Chair vs Settee from product names
     },
 ]
 
@@ -290,28 +376,55 @@ def scrape(num_pages=None, max_products=None):
     print(f"Total products scraped: {len(all_products)}")
     print(f"{'=' * 80}")
 
-    # Save to JSON file (don't push to DB per user request)
-    print("\nSaving to JSON")
+    # Print summary statistics
+    product_type_counts = {}
+    room_type_counts = {}
+    multi_room_count = 0
+
+    for product in all_products:
+        prod_type = product.get('product_type', 'Unknown')
+        product_type_counts[prod_type] = product_type_counts.get(prod_type, 0) + 1
+
+        rooms = product.get('room_types', [])
+        if len(rooms) > 1:
+            multi_room_count += 1
+        for room in rooms:
+            room_type_counts[room] = room_type_counts.get(room, 0) + 1
+
+    print("\n=== Product Type Summary ===")
+    for prod_type, count in sorted(product_type_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {prod_type}: {count}")
+
+    print("\n=== Room Type Summary ===")
+    for room, count in sorted(room_type_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {room}: {count}")
+
+    print(f"\n=== Multi-Room Products ===")
+    print(f"  Products in multiple rooms: {multi_room_count}")
+
+    # Save to JSON file
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
+    try:
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(all_products, f, indent=4, ensure_ascii=False)
+        print(f"\n[SUCCESS] Saved to {output_path}")
+    except Exception as e:
+        print(f"Error saving to JSON: {e}")
 
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(all_products, f, indent=2, ensure_ascii=False)
+    # Upload to Supabase
+    sync_stats = {}
+    try:
+        sync_stats = sync_products_to_supabase(all_products, vendor)
+    except Exception as e:
+        print(f"Error syncing to Supabase: {e}")
 
-    print(f"[+] Saved to: {output_path}")
-
-    # Return stats (no DB sync per user request)
-    stats = {
+    # Return statistics
+    return {
+        "vendor": vendor,
         "scraped_count": len(all_products),
-        "success_count": len(all_products),
-        "error_count": 0,
-        "deleted_count": 0
+        **sync_stats
     }
-
-    print("\n" + "=" * 80)
-    print("Scraping Complete")
-    print("=" * 80)
-
-    return stats
 
 
 if __name__ == "__main__":

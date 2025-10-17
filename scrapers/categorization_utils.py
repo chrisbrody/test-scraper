@@ -163,9 +163,12 @@ def infer_product_type_from_category_name(category_name: str) -> Optional[str]:
         ("console", "Console"),
         ("credenza", "Console"),
         ("dresser", "Dresser"),
+        ("counter stool", "Stool"),  # Must be before "bar" to match "Bar & Counter Stools"
+        ("bar stool", "Stool"),  # Must be before "bar" to match "Bar Stool" correctly
+        ("bar & counter stool", "Stool"),  # Hickory Chair format - explicit match
         ("bar cart", "Bar Cart"),  # Hickory Chair format
         ("bar_cart", "Bar Cart"),
-        ("bar", "Bar Cart"),
+        ("bar & bar cart", "Bar Cart"),  # Hickory Chair format - explicit match
         ("bookcase & display", "Bookcase"),  # Hickory Chair format
         ("bookcase", "Bookcase"),
         ("display cabinet", "Cabinet"),  # Hickory Chair format
@@ -174,8 +177,6 @@ def infer_product_type_from_category_name(category_name: str) -> Optional[str]:
         ("accent", "Accent"),
         ("tray", "Accent"),
         ("lighting", "Table Lamp"),
-        ("counter stool", "Stool"),  # Hickory Chair format
-        ("bar stool", "Stool"),  # Hickory Chair format
         ("stool", "Stool"),
         ("chest", "Dresser"),
         # Less specific matches last

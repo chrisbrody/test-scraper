@@ -13,7 +13,17 @@
     {
       "id": "sofa",
       "name": "Sofa",
-      "keywords": ["sofa", "couch", "sectional", "corner sofa", "laf sofa", "raf sofa", "bumper", "curved corner", "wedge corner", "corner unit", "armless unit", "banquette", "m2m", "made to measure", "raf unit", "square corner", "lounge", "divan", "tete-a-tete", "bistro", "unit with"]
+      "keywords": ["sofa", "couch", "lounge", "divan", "tete-a-tete", "bistro"]
+    },
+    {
+      "id": "sectional",
+      "name": "Sectional",
+      "keywords": ["sectional", "corner sofa", "laf sofa", "raf sofa", "bumper", "curved corner", "wedge corner", "corner unit", "armless unit", "m2m", "made to measure", "raf unit", "square corner", "unit with"]
+    },
+    {
+      "id": "sleeper_sofa",
+      "name": "Sleeper Sofa",
+      "keywords": ["sleeper sofa", "sleeper", "sofa bed", "pull out sofa", "convertible sofa"]
     },
     {
       "id": "loveseat",
@@ -23,12 +33,22 @@
     {
       "id": "chair",
       "name": "Chair",
-      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair", "swivel rocker", "rocker", "swivel", "bergere", "recliner"]
+      "keywords": ["chair", "armchair", "accent chair", "lounge chair", "carved chair", "armless chair", "side chair", "dining chair", "swivel rocker", "rocker", "swivel", "bergere"]
+    },
+    {
+      "id": "recliner",
+      "name": "Recliner",
+      "keywords": ["recliner", "reclining chair", "power recliner", "manual recliner"]
     },
     {
       "id": "table",
       "name": "Table",
-      "keywords": ["dining table", "center table", "coffee table", "cocktail table", "bunching cocktail", "hall table", "center hall table", "book table", "pedestal table", "martini table", "spot table", "game table", "gathering table", "refectory table", "trestle table", "oval table", "round table", "rectangular table", "square table", "table"]
+      "keywords": ["dining table", "center table", "hall table", "center hall table", "book table", "pedestal table", "game table", "gathering table", "refectory table", "trestle table", "oval table", "round table", "rectangular table", "square table", "table"]
+    },
+    {
+      "id": "cocktail_table",
+      "name": "Cocktail Table",
+      "keywords": ["cocktail table", "coffee table", "bunching cocktail", "martini table", "spot table"]
     },
     {
       "id": "console",
@@ -38,7 +58,7 @@
     {
       "id": "stool",
       "name": "Stool",
-      "keywords": ["stool", "bar stool", "counter stool", "barstool", "counterstool"]
+      "keywords": ["stool", "bar stool", "counter stool", "barstool", "counterstool", "stool with arm"]
     },
     {
       "id": "side_table",
@@ -78,12 +98,12 @@
     {
       "id": "bar_cart",
       "name": "Bar Cart",
-      "keywords": ["bar cart", "bar", "cart"]
+      "keywords": ["bar cart", "cart"]
     },
     {
       "id": "chaise",
       "name": "Chaise",
-      "keywords": ["chaise", "chaise lounge", "chaise longue", "daybed"]
+      "keywords": ["chaise", "chaise lounge", "chaise longue"]
     },
     {
       "id": "ottoman",
@@ -98,7 +118,7 @@
     {
       "id": "settee",
       "name": "Settee",
-      "keywords": ["settee", "banquette", "tête-à-tête", "tete-a-tete", "tete a tete"]
+      "keywords": ["settee", "banquette", "tête-à-tête", "tete-a-tete", "tete a tete", "daybed", "day bed", "day lounger"]
     },
     {
       "id": "chandelier",
