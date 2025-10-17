@@ -18,11 +18,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # Handle both direct execution and module import
 try:
-    from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
     from .categorization_utils import categorize_product
 except ImportError:
-    from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
     from categorization_utils import categorize_product
 
@@ -275,21 +273,15 @@ def scrape(num_pages=None, max_products=None):
 
     print(f"✓ Backup saved to: {output_path}")
 
-    # Sync to Supabase
-    print("\n" + "=" * 80)
-    print("Syncing to Supabase")
-    print("=" * 80)
-
-    stats = sync_products_to_supabase(all_products, vendor)
-
-    # Add scraped count to stats
-    stats["scraped_count"] = len(all_products)
-
     print("\n" + "=" * 80)
     print("Scraping Complete")
     print("=" * 80)
 
-    return stats
+    # Return statistics
+    return {
+        "vendor": vendor,
+        "scraped_count": len(all_products),
+    }
 
 
 if __name__ == "__main__":

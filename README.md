@@ -1,17 +1,19 @@
 # Multi-Vendor Product Scraper
 
-A Python-based web scraping system that extracts product data from multiple furniture manufacturer websites and syncs them to a Supabase database.
+A Python-based web scraping system that extracts product data from multiple furniture manufacturer websites, categorizes them with room types and product types, and optionally syncs them to a Supabase database.
 
 ## Overview
 
-This project scrapes product information (name, SKU, image URL, price, stock status) from various furniture vendor websites and stores the data in a centralized Supabase database. It handles pagination, async fetching, and automatic synchronization with database cleanup.
+This project scrapes product information (name, SKU, image URL, price, stock status, room types, product types) from various furniture vendor websites and stores the data first as JSON files for review, then optionally uploads to a centralized Supabase database. The workflow is separated into two stages: **scraping** (data collection) and **saving** (database upload), giving you full control over data review before uploading.
 
 ## Features
 
-- **Multi-vendor support**: Currently supports HVL Group, Woodbridge Furniture, Bernhardt, Hickory Chair, and Sherrill Furniture
+- **Multi-vendor support**: Currently supports HVL Group, Woodbridge Furniture, Bernhardt, Hickory Chair, Sherrill Furniture, and Rowe Furniture
+- **Separated workflow**: Scrape → Review JSON → Upload to database (optional)
+- **Product categorization**: Automatic categorization of products by room types and product types using taxonomy files
 - **Rotating proxy support**: Built-in proxy rotation for resilience against rate limiting and IP bans
-- **Async scraping**: Efficient parallel fetching of product detail pages
-- **Database sync**: Automatic upsert and cleanup of stale products in Supabase
+- **Flexible data saving**: Upload all vendors at once or select specific vendors
+- **Database sync**: Smart upsert with change detection and cleanup of stale products
 - **Batch processing**: Configurable batch sizes and product limits
 - **JSON-LD extraction**: Structured data parsing from product schema markup
 - **Fallback parsing**: HTML-based extraction when structured data is unavailable
@@ -24,22 +26,29 @@ This project scrapes product information (name, SKU, image URL, price, stock sta
 test-direct-mfg-scraper/
 ├── scrapers/
 │   ├── __init__.py
-│   ├── hvlgroup.py            # HVL Group scraper
-│   ├── woodbridgefurniture.py # Woodbridge Furniture scraper
-│   ├── bernhardt.py           # Bernhardt scraper (Selenium)
-│   ├── hickorychair.py        # Hickory Chair scraper (Selenium)
-│   ├── sherrillfurniture.py   # Sherrill Furniture scraper (Selenium)
-│   ├── proxy_utils.py         # Rotating proxy manager
-│   └── supabase_utils.py      # Database sync utilities
+│   ├── hvlgroup.py              # HVL Group scraper
+│   ├── woodbridgefurniture.py   # Woodbridge Furniture scraper
+│   ├── bernhardt.py             # Bernhardt scraper (Selenium + API)
+│   ├── hickorychair.py          # Hickory Chair scraper (Selenium)
+│   ├── sherrillfurniture.py     # Sherrill Furniture scraper (Selenium)
+│   ├── rowefurniture.py         # Rowe Furniture scraper (Selenium)
+│   ├── categorization_utils.py  # Product categorization logic
+│   ├── proxy_utils.py           # Rotating proxy manager
+│   └── supabase_utils.py        # Database sync utilities
+├── taxonomies/
+│   ├── room_types.json          # Room type taxonomy
+│   └── product_types.json       # Product type taxonomy
 ├── data/
 │   ├── hvlgroup.json
 │   ├── woodbridgefurniture.json
 │   ├── bernhardt_products.json
 │   ├── hickorychair_products.json
-│   └── sherrillfurniture_products.json
-├── run_scrapers.py            # Main scraper runner
-├── supabase_setup.sql         # Database schema
-├── .env.example               # Environment variables template
+│   ├── sherrillfurniture_products.json
+│   └── rowefurniture_products.json
+├── run_scrapers.py              # Main scraper runner (scraping only)
+├── save_data.py                 # Database uploader (Supabase sync)
+├── supabase_setup.sql           # Database schema
+├── .env.example                 # Environment variables template
 └── README.md
 ```
 
@@ -86,13 +95,66 @@ See `.env.example` for a complete template.
 
 ## Usage
 
-### Running All Scrapers
+### Quick Start
 
-Execute all enabled scrapers sequentially:
+```bash
+# 1. Scrape all vendors (saves to JSON files)
+python run_scrapers.py
+
+# 2. Review the JSON files in data/ folder
+ls data/
+
+# 3. Upload to Supabase
+python save_data.py                    # All vendors
+python save_data.py hvlgroup bernhardt # Specific vendors only
+```
+
+### Workflow Overview
+
+The scraping process is separated into two stages:
+
+1. **Scrape**: Collect data from websites and save to JSON files
+2. **Save**: Upload JSON data to Supabase database (optional)
+
+This separation allows you to:
+- Review scraped data before uploading
+- Manually edit JSON files if needed
+- Selectively upload specific vendors
+- Re-upload without re-scraping
+
+### Stage 1: Scraping Data
+
+Execute all enabled scrapers to collect data:
 
 ```bash
 python run_scrapers.py
 ```
+
+This will:
+- Scrape all enabled vendors
+- Save data to `data/` folder as JSON files
+- Display scraping statistics
+- **NOT** upload to database (gives you time to review)
+
+### Stage 2: Uploading to Database
+
+After reviewing the JSON files, upload to Supabase:
+
+```bash
+# Upload all vendors
+python save_data.py
+
+# Upload specific vendors only
+python save_data.py hvlgroup bernhardt
+python save_data.py hickorychair
+```
+
+This will:
+- Read JSON files from `data/` folder
+- Upload to Supabase with smart change detection
+- Skip unchanged products
+- Delete discontinued products
+- Display detailed statistics
 
 ### Configuration
 
@@ -131,13 +193,26 @@ MAX_PRODUCTS_PER_BATCH = 500  # Limit products per vendor
 
 ### Running Individual Scrapers
 
-Import and run a specific scraper:
+Run a specific scraper directly:
+
+```bash
+# Navigate to scrapers directory
+cd scrapers
+
+# Run individual scraper
+python hvlgroup.py
+python bernhardt.py
+python hickorychair.py
+```
+
+Or import and run programmatically:
 
 ```python
 from scrapers import hvlgroup
 
+# Scrape and save to JSON only
 stats = hvlgroup.scrape(num_pages=5, max_products=300)
-print(stats)
+print(stats)  # {'vendor': 'hvlgroup', 'scraped_count': 300}
 ```
 
 ## Scrapers
@@ -180,6 +255,106 @@ print(stats)
   - Automatic scroll pagination
   - JSON-LD structured data extraction
 
+## Product Categorization
+
+All products are automatically categorized with room types and product types using taxonomy files.
+
+### Taxonomies
+
+The project includes two taxonomy files that define the categorization structure:
+
+#### `taxonomies/room_types.json`
+
+Defines all possible room categories for products:
+
+```json
+{
+  "room_types": [
+    "Living Room",
+    "Dining Room",
+    "Bedroom",
+    "Office",
+    "Bathroom",
+    "Kitchen",
+    "Outdoor",
+    "Hallway",
+    "Entrance",
+    "Multi-Purpose"
+  ]
+}
+```
+
+#### `taxonomies/product_types.json`
+
+Defines product categories with keywords for automatic matching:
+
+```json
+{
+  "product_types": {
+    "Sofa": {
+      "keywords": ["sofa", "couch", "sectional", "loveseat"]
+    },
+    "Chair": {
+      "keywords": ["chair", "armchair", "accent chair", "side chair"]
+    },
+    "Table": {
+      "keywords": ["table", "desk", "console"]
+    },
+    "Bed": {
+      "keywords": ["bed", "headboard", "footboard"]
+    },
+    "Lighting": {
+      "keywords": ["lamp", "chandelier", "sconce", "pendant", "light", "fixture"]
+    }
+    // ... more categories
+  }
+}
+```
+
+### Categorization Logic
+
+The `categorization_utils.py` module automatically categorizes products:
+
+1. **Room Type Detection**:
+   - Extracts room type from category URL (e.g., "/bedroom/" → "Bedroom")
+   - Checks product name for room keywords
+   - Falls back to "Multi-Purpose" if unable to determine
+
+2. **Product Type Detection**:
+   - Matches product name against keyword lists in taxonomy
+   - Uses category name for additional context
+   - Falls back to "Other" if no match found
+
+3. **Special Handling**:
+   - **Lighting products**: Enhanced categorization with fixture types (Chandelier, Wall Sconce, Pendant, etc.)
+   - **Multi-room products**: Can belong to multiple rooms (e.g., "Dining Chair" → ["Dining Room", "Office"])
+
+### Example Categorization
+
+```python
+from scrapers.categorization_utils import categorize_product
+
+# Categorize a product
+result = categorize_product(
+    product_name="Modern Leather Sectional Sofa",
+    category_url="https://example.com/living-room/sofas"
+)
+
+print(result)
+# {
+#   'room_types': ['Living Room'],
+#   'product_type': 'Sofa'
+# }
+```
+
+### Customizing Taxonomies
+
+To add or modify categories:
+
+1. Edit `taxonomies/room_types.json` to add new room types
+2. Edit `taxonomies/product_types.json` to add new product categories or keywords
+3. Restart scrapers to use updated taxonomies
+
 ## Data Schema
 
 Each product record contains:
@@ -191,8 +366,30 @@ Each product record contains:
   "img_url": "https://example.com/image.jpg",
   "product_url": "https://example.com/product/prod123",
   "price": 1299.99,
-  "in_stock": true,
-  "vendor": "hvlgroup"
+  "in_stock": "In stock",
+  "room_types": ["Living Room", "Bedroom"],
+  "product_type": "Chair",
+  "fixture_type": "Chandelier"  // Only for lighting products
+}
+```
+
+**Database Schema** (with vendor added during upload):
+
+```json
+{
+  "id": "uuid",
+  "name": "Product Name",
+  "sku": "PROD123",
+  "vendor": "hvlgroup",
+  "img_url": "https://example.com/image.jpg",
+  "product_url": "https://example.com/product/prod123",
+  "price": 1299.99,
+  "in_stock": "In stock",
+  "room_types": ["Living Room", "Bedroom"],
+  "product_type": "Chair",
+  "fixture_type": "Chandelier",  // Optional, only for lighting
+  "created_at": "2025-01-15T10:30:00Z",
+  "updated_at": "2025-01-15T10:30:00Z"
 }
 ```
 
@@ -218,13 +415,50 @@ CREATE TABLE products (
 
 ### Sync Behavior
 
-- **Upsert**: Products are inserted or updated based on (SKU, vendor) uniqueness
-- **Cleanup**: Products removed from vendor websites are deleted from the database
+The `save_data.py` script provides intelligent database synchronization:
+
+- **Smart upsert**: Products are inserted or updated based on (SKU, vendor) uniqueness
+- **Change detection**: Only updates products when data has actually changed (skips unchanged products)
+- **Cleanup**: Products removed from vendor websites are automatically deleted from the database
 - **Batch processing**: Products are synced in configurable batches (default: 100)
+- **Statistics**: Detailed reporting of added, updated, skipped, and deleted products
+
+Example sync output:
+```
+==================================================
+Syncing 180 products to Supabase for vendor: hvlgroup...
+Batch size: 100
+Skip unchanged: True
+==================================================
+
+Fetching existing products from database...
+Found 150 existing products in database
+
+Processing batch 1/2 (100 products)...
++ Added: PROD001 (ABC123)
+↻ Updated: PROD002 (DEF456)
+⊘ Skipped (unchanged): PROD003 (GHI789)
+...
+
+==================================================
+Removing hvlgroup products no longer on website...
+==================================================
+✓ Deleted: OLD123
+✓ Deleted: OLD456
+Deleted 2 discontinued products
+
+==================================================
+Sync complete!
+Added/Updated: 30
+Skipped (unchanged): 148
+Errors: 0
+Deleted: 2
+==================================================
+```
 
 ## Output
 
-Sample scraping output:
+### Scraping Output (`run_scrapers.py`)
 
 ```
 ============================================================
@@ -234,21 +468,79 @@ STARTING MULTI-VENDOR SCRAPER
 ============================================================
 SCRAPING: HVLGROUP
 ============================================================
-Starting scrape of 3 pages...
-Fetching page 1...
+Starting scrape of 9 room categories...
+
+============================================================
+Scraping: Bedroom (CurrentPageId=31)
+Pages to scrape: 54
+============================================================
+
+Fetching page 1: https://hvlgroup.com/Products/Paging?...
 Found 60 products on page 1
+  [+] New: SKU123 - Modern Table Lamp
+      Fixture: Table Lamp, Rooms: Bedroom
 ...
-Syncing 180 products to Supabase for vendor: hvlgroup...
-✓ hvlgroup complete
+
+[SUCCESS] Total unique products: 3238
+
+=== Fixture Type Summary ===
+  Chandelier: 1250
+  Wall Sconce: 890
+  Pendant: 650
+  ...
+
+[SUCCESS] Saved to data/hvlgroup.json
+
+============================================================
+Scraping Complete
+============================================================
+
+✓ hvlgroup complete - 3238 products saved to JSON
 
 ============================================================
 SCRAPING COMPLETE - SUMMARY
 ============================================================
-Vendors scraped: 3
-Total products scraped: 450
-Total upserted: 445
-Total errors: 5
-Total deleted: 12
+Vendors scraped: 6
+Total products scraped: 8450
+
+JSON files saved to: data/
+To upload to Supabase, run: python save_data.py
+============================================================
+```
+
+### Upload Output (`save_data.py`)
+
+```
+============================================================
+SAVING ALL VENDORS TO SUPABASE
+============================================================
+Vendors: hvlgroup, woodbridgefurniture, bernhardt, hickorychair, sherrillfurniture, rowefurniture
+
+============================================================
+LOADING: HVLGROUP
+============================================================
+File: data/hvlgroup.json
+  ✓ Loaded 3238 products from JSON
+
+==================================================
+Syncing 3238 products to Supabase for vendor: hvlgroup...
+==================================================
++ Added: PROD001
+↻ Updated: PROD002
+⊘ Skipped (unchanged): PROD003
+...
+
+✓ hvlgroup complete
+
+============================================================
+SYNC COMPLETE - SUMMARY
+============================================================
+Vendors synced: 6
+Total products loaded: 8450
+Total upserted: 125
+Total skipped (unchanged): 8250
+Total errors: 0
+Total deleted: 75
 ============================================================
 ```
 
@@ -265,26 +557,82 @@ Total deleted: 12
 
 1. Create a new file in `scrapers/` (e.g., `newvendor.py`)
 2. Implement the `scrape(num_pages, max_products)` function
-3. Use `supabase_utils.sync_products_to_supabase()` for database sync
-4. Add configuration to `run_scrapers.py`
+3. Import and use `categorize_product()` for product categorization
+4. Save to JSON only (no direct database upload)
+5. Add configuration to `run_scrapers.py` and `save_data.py`
 
 Example:
 
 ```python
 # scrapers/newvendor.py
-from .supabase_utils import sync_products_to_supabase
+import json
+import os
+
+try:
+    from .categorization_utils import categorize_product
+except ImportError:
+    from categorization_utils import categorize_product
 
 def scrape(num_pages=1, max_products=None):
     vendor = "newvendor"
     products = []
 
     # Your scraping logic here
+    for product in scraped_products:
+        # Categorize each product
+        categorization = categorize_product(
+            product['name'],
+            category_url
+        )
 
-    stats = sync_products_to_supabase(products, vendor)
+        product_data = {
+            "name": product['name'],
+            "sku": product['sku'],
+            "img_url": product['img_url'],
+            "product_url": product['product_url'],
+            "price": product['price'],
+            "in_stock": product['in_stock'],
+            "room_types": categorization['room_types'],
+            "product_type": categorization['product_type']
+        }
+        products.append(product_data)
+
+    # Save to JSON
+    output_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_path = os.path.join(output_dir, f'{vendor}.json')
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(products, f, indent=2, ensure_ascii=False)
+
+    print(f"[SUCCESS] Saved to {output_path}")
+
+    # Return stats
     return {
-        "scraped_count": len(products),
-        **stats
+        "vendor": vendor,
+        "scraped_count": len(products)
     }
+```
+
+Then add to `run_scrapers.py`:
+```python
+from scrapers import newvendor
+
+SCRAPERS = {
+    # ... existing scrapers
+    "newvendor": {
+        "enabled": True,
+        "scraper": newvendor.scrape,
+    },
+}
+```
+
+And add to `save_data.py`:
+```python
+VENDOR_FILES = {
+    # ... existing vendors
+    "newvendor": "newvendor.json",
+}
 ```
 
 ## Proxy Configuration

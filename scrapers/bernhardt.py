@@ -24,11 +24,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # Handle both direct execution and module import
 try:
-    from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
     from .categorization_utils import categorize_product
 except ImportError:
-    from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
     from categorization_utils import categorize_product
 
@@ -900,36 +898,15 @@ def scrape(num_pages=None, max_products=None):
 
     print(f"[OK] Backup saved to: {output_path}")
 
-    # Step 5: Sync to Supabase (filter to only DB fields)
-    print("\n" + "=" * 80)
-    print("STEP 5: Syncing to Supabase")
-    print("=" * 80)
-
-    # Filter products to only include fields that exist in DB schema
-    db_products = []
-    for product in all_products:
-        db_product = {
-            "name": product.get("name"),
-            "sku": product.get("sku"),
-            "img_url": product.get("img_url"),
-            "product_url": product.get("product_url"),
-            "price": product.get("price"),
-            "in_stock": product.get("in_stock"),
-            "room_types": product.get("room_types"),
-            "product_type": product.get("product_type"),
-        }
-        db_products.append(db_product)
-
-    stats = sync_products_to_supabase(db_products, vendor)
-
-    # Add scraped count to stats
-    stats["scraped_count"] = len(all_products)
-
     print("\n" + "=" * 80)
     print("Scraping Complete")
     print("=" * 80)
 
-    return stats
+    # Return statistics
+    return {
+        "vendor": vendor,
+        "scraped_count": len(all_products),
+    }
 
 
 # ===== OLD SCRAPE FUNCTION (COMMENTED OUT, PRESERVED) =====

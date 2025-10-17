@@ -51,9 +51,6 @@ def main():
     total_stats = {
         "vendors_scraped": 0,
         "total_products": 0,
-        "total_upserted": 0,
-        "total_errors": 0,
-        "total_deleted": 0,
     }
 
     for vendor_name, config in SCRAPERS.items():
@@ -77,11 +74,8 @@ def main():
             # Update totals
             total_stats["vendors_scraped"] += 1
             total_stats["total_products"] += stats.get("scraped_count", 0)
-            total_stats["total_upserted"] += stats.get("success_count", 0)
-            total_stats["total_errors"] += stats.get("error_count", 0)
-            total_stats["total_deleted"] += stats.get("deleted_count", 0)
 
-            print(f"✓ {vendor_name} complete")
+            print(f"✓ {vendor_name} complete - {stats.get('scraped_count', 0)} products saved to JSON")
 
         except Exception as e:
             print(f"✗ Error running {vendor_name} scraper: {e}")
@@ -93,9 +87,8 @@ def main():
     print(f"{'=' * 60}")
     print(f"Vendors scraped: {total_stats['vendors_scraped']}")
     print(f"Total products scraped: {total_stats['total_products']}")
-    print(f"Total upserted: {total_stats['total_upserted']}")
-    print(f"Total errors: {total_stats['total_errors']}")
-    print(f"Total deleted: {total_stats['total_deleted']}")
+    print(f"\nJSON files saved to: data/")
+    print(f"To upload to Supabase, run: python save_data.py")
     print(f"{'=' * 60}")
 
 if __name__ == "__main__":

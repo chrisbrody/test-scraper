@@ -6,11 +6,9 @@ import re
 
 # Handle both direct execution and module import
 try:
-    from .supabase_utils import sync_products_to_supabase
     from .proxy_utils import get_proxy_manager, add_delay
     from .categorization_utils import categorize_product
 except ImportError:
-    from supabase_utils import sync_products_to_supabase
     from proxy_utils import get_proxy_manager, add_delay
     from categorization_utils import categorize_product
 
@@ -339,18 +337,10 @@ def scrape(room_configs=None, max_products=None):
     except Exception as e:
         print(f"Error saving to JSON: {e}")
 
-    # Upload to Supabase
-    sync_stats = {}
-    try:
-        sync_stats = sync_products_to_supabase(all_products, vendor)
-    except Exception as e:
-        print(f"Error syncing to Supabase: {e}")
-
     # Return statistics
     return {
         "vendor": vendor,
         "scraped_count": len(all_products),
-        **sync_stats
     }
 
 def main():

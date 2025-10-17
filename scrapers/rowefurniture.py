@@ -24,10 +24,8 @@ from selenium.common.exceptions import TimeoutException
 # Handle both direct execution and module import
 try:
     from .categorization_utils import categorize_product
-    from .supabase_utils import sync_products_to_supabase
 except ImportError:
     from categorization_utils import categorize_product
-    from supabase_utils import sync_products_to_supabase
 
 # --- Configuration ---
 BASE_URL = "https://rowefurniture.com"
@@ -412,18 +410,10 @@ def scrape(num_pages=None, max_products=None):
     except Exception as e:
         print(f"Error saving to JSON: {e}")
 
-    # Upload to Supabase
-    sync_stats = {}
-    try:
-        sync_stats = sync_products_to_supabase(all_products, vendor)
-    except Exception as e:
-        print(f"Error syncing to Supabase: {e}")
-
     # Return statistics
     return {
         "vendor": vendor,
         "scraped_count": len(all_products),
-        **sync_stats
     }
 
 
