@@ -126,25 +126,16 @@ CATEGORIES = [
         "name": "Office Desks",
         "url": f"{BASE_URL}/desks",
         "room_types": ["Office"],
-        "product_type_override": "Desk",
     },
     {
         "name": "Office Chairs",
         "url": f"{BASE_URL}/office-chairs",
         "room_types": ["Office", "Dining Room"],
-        "product_type_override": "Chair",
     },
     {
         "name": "Office Storage",
         "url": f"{BASE_URL}/storage",
         "room_types": ["Office"],
-        "product_type_keywords": {
-            "cabinet": "Cabinet",
-            "console": "Console",
-            "credenza": "Console",
-            "bookcase": "Bookcase",
-            "shelf": "Bookcase",
-        }
     },
 ]
 
@@ -268,27 +259,18 @@ def scrape_category(driver, category_config: Dict, max_products: Optional[int] =
                     if img_elem:
                         img_url = img_elem.get('src', '')
 
-                # Categorize product
+                # Categorize product using centralized categorization utility
                 room_types = category_config.get('room_types', ['Multi-Purpose'])
 
-                # Determine product type
-                product_type = None
-                name_lower = name.lower()
+                # Use categorization utility for ALL products
+                categorization = categorize_product(name, category_url)
+                product_type = categorization['product_type']
+                fixture_type = categorization['fixture_type']
 
-                # Check if category has a product_type_override
-                if 'product_type_override' in category_config:
-                    product_type = category_config['product_type_override']
-                # Check if category has keyword mappings
-                elif 'product_type_keywords' in category_config:
-                    for keyword, ptype in category_config['product_type_keywords'].items():
-                        if keyword in name_lower:
-                            product_type = ptype
-                            break
-
-                # If still no product type, use categorization utility
-                if not product_type:
-                    categorization = categorize_product(name, category_url)
-                    product_type = categorization['product_type']
+                # Manual override for specific products
+                if "Freya Slipcovered Chaise" in name:
+                    product_type = "Chair"
+                    fixture_type = "Chaise"
 
                 product_data = {
                     "name": name,
@@ -298,7 +280,8 @@ def scrape_category(driver, category_config: Dict, max_products: Optional[int] =
                     "price": None,  # Prices not displayed without login
                     "in_stock": None,  # Stock not shown on listing
                     "room_types": room_types,
-                    "product_type": product_type
+                    "product_type": product_type,
+                    "fixture_type": fixture_type
                 }
 
                 products.append(product_data)
@@ -370,18 +353,38 @@ def scrape(num_pages=None, max_products=None):
     finally:
         driver.quit()
 
+    # Deduplicate products by SKU and combine room_types
     print(f"\n{'=' * 80}")
-    print(f"Total products scraped: {len(all_products)}")
+    print(f"Total products scraped (before deduplication): {len(all_products)}")
+
+    deduplicated = {}
+    for product in all_products:
+        sku = product['sku']
+        if sku in deduplicated:
+            # Combine room_types arrays (avoid duplicates)
+            existing_rooms = set(deduplicated[sku]['room_types'])
+            new_rooms = set(product['room_types'])
+            deduplicated[sku]['room_types'] = sorted(list(existing_rooms | new_rooms))
+        else:
+            deduplicated[sku] = product
+
+    all_products = list(deduplicated.values())
+    print(f"Total products after deduplication: {len(all_products)}")
     print(f"{'=' * 80}")
 
     # Print summary statistics
     product_type_counts = {}
+    fixture_type_counts = {}
     room_type_counts = {}
     multi_room_count = 0
 
     for product in all_products:
         prod_type = product.get('product_type', 'Unknown')
         product_type_counts[prod_type] = product_type_counts.get(prod_type, 0) + 1
+
+        fixture = product.get('fixture_type')
+        if fixture:
+            fixture_type_counts[fixture] = fixture_type_counts.get(fixture, 0) + 1
 
         rooms = product.get('room_types', [])
         if len(rooms) > 1:
@@ -392,6 +395,10 @@ def scrape(num_pages=None, max_products=None):
     print("\n=== Product Type Summary ===")
     for prod_type, count in sorted(product_type_counts.items(), key=lambda x: x[1], reverse=True):
         print(f"  {prod_type}: {count}")
+
+    print("\n=== Fixture Type Summary ===")
+    for fixture, count in sorted(fixture_type_counts.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {fixture}: {count}")
 
     print("\n=== Room Type Summary ===")
     for room, count in sorted(room_type_counts.items(), key=lambda x: x[1], reverse=True):

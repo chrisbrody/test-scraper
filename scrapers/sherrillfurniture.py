@@ -185,6 +185,7 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
                 if sku == "SWDC361":
                     categorization['product_type'] = "Chair"
                     categorization['room_types'] = ["Living Room", "Dining Room", "Office", "Multi-Purpose"]
+                    categorization['fixture_type'] = "Swivel"
 
                 product_data = {
                     "name": name,
@@ -194,7 +195,8 @@ def extract_products_from_listing_page(html: str, base_url: str, seen_skus: Set[
                     "price": None,  # No price available
                     "in_stock": None,  # No stock status available
                     "room_types": categorization['room_types'],
-                    "product_type": categorization['product_type']
+                    "product_type": categorization['product_type'],
+                    "fixture_type": categorization['fixture_type']
                 }
 
                 products.append(product_data)

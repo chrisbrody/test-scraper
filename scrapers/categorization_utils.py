@@ -21,6 +21,7 @@ def load_taxonomy(filename: str) -> dict:
 # Load taxonomies at module level
 ROOM_TYPES = load_taxonomy('room_types.json')['room_types']
 PRODUCT_TYPES = load_taxonomy('product_types.json')['product_types']
+FIXTURE_TYPES = load_taxonomy('fixture_types.json')['fixture_types']
 
 
 def extract_room_type_from_url(url: str) -> Optional[str]:
@@ -62,10 +63,51 @@ def infer_product_type_from_name(product_name: str) -> Optional[str]:
 
     name_lower = product_name.lower()
 
+    # Special handling: Consolidate product types (fixture_type will differentiate them)
+
+    # Sofas: Sectional, Sleeper Sofa, Loveseat -> Sofa
+    if 'sectional' in name_lower:
+        return 'Sofa'
+    if 'sleeper' in name_lower:
+        return 'Sofa'
+    if 'loveseat' in name_lower or 'love seat' in name_lower:
+        return 'Sofa'
+
+    # Tables: Cocktail, Side, End, Console, Nightstand, Desk, Credenza -> Table
+    if 'cocktail table' in name_lower or 'coffee table' in name_lower:
+        return 'Table'
+    if 'side table' in name_lower or 'end table' in name_lower:
+        return 'Table'
+    if 'console' in name_lower:
+        return 'Table'
+    if 'credenza' in name_lower:
+        return 'Table'
+    if 'nightstand' in name_lower or 'bedside table' in name_lower:
+        return 'Table'
+    if 'dining table' in name_lower:
+        return 'Table'
+    if 'sideboard' in name_lower:
+        return 'Table'
+
+    # Seating: Stool, Bench, Ottoman, Chaise, Settee -> keep separate but consolidate recliner
+    if 'recliner' in name_lower or 'reclining' in name_lower:
+        return 'Chair'
+
+    # Chaise chairs should be categorized as Chair (not the separate Chaise product type)
+    if 'chaise' in name_lower and 'chair' in name_lower:
+        return 'Chair'
+
     # Build a list of (product_type_name, keyword, keyword_length) tuples
     # Sort by keyword length (descending) to match longer, more specific phrases first
     keyword_matches = []
     for product_type in PRODUCT_TYPES:
+        # Skip consolidated product types since we handle them above
+        consolidated_types = [
+            'Sectional', 'Sleeper Sofa', 'Loveseat',
+            'Cocktail Table', 'Side Table', 'Nightstand', 'Console', 'Recliner'
+        ]
+        if product_type['name'] in consolidated_types:
+            continue
         for keyword in product_type['keywords']:
             keyword_matches.append((product_type['name'], keyword, len(keyword)))
 
@@ -74,8 +116,8 @@ def infer_product_type_from_name(product_name: str) -> Optional[str]:
 
     # Try to match against product type keywords
     for product_type_name, keyword, _ in keyword_matches:
-        # Use word boundaries to avoid partial matches
-        pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+        # Use word boundaries for start, but allow plural 's' at end
+        pattern = r'\b' + re.escape(keyword.lower()) + r's?\b'
         if re.search(pattern, name_lower):
             return product_type_name
 
@@ -134,8 +176,8 @@ def infer_product_type_from_category_name(category_name: str) -> Optional[str]:
     # Ordered by specificity (most specific first to avoid false matches)
     category_to_product_type = [
         # Most specific matches first
-        ("nightstand", "Nightstand"),
-        ("bedside", "Nightstand"),
+        ("nightstand", "Table"),  # Nightstands are Tables (fixture_type will be Nightstand)
+        ("bedside", "Table"),  # Bedside tables are Tables (fixture_type will be Nightstand)
         ("dining table", "Table"),  # Hickory Chair format (space-separated)
         ("dining_table", "Table"),
         ("cocktail table", "Table"),  # Hickory Chair format
@@ -159,9 +201,10 @@ def infer_product_type_from_category_name(category_name: str) -> Optional[str]:
         ("bench", "Bench"),
         ("desk & console", "Desk"),  # Hickory Chair format (prioritize desk)
         ("desk", "Desk"),
-        ("console & credenza", "Console"),  # Hickory Chair format
-        ("console", "Console"),
-        ("credenza", "Console"),
+        ("console & credenza", "Table"),  # Hickory Chair format - consoles are tables
+        ("console", "Table"),  # Consoles are tables
+        ("credenza", "Table"),  # Credenzas are tables
+        ("sideboard", "Table"),  # Sideboards are tables
         ("dresser", "Dresser"),
         ("counter stool", "Stool"),  # Must be before "bar" to match "Bar & Counter Stools"
         ("bar stool", "Stool"),  # Must be before "bar" to match "Bar Stool" correctly
@@ -194,6 +237,67 @@ def infer_product_type_from_category_name(category_name: str) -> Optional[str]:
     return None
 
 
+def infer_fixture_type(product_name: str, product_type: str) -> Optional[str]:
+    """
+    Infer fixture type (sub-category) based on product name and product type.
+
+    Args:
+        product_name: Product name (e.g., "Abbie Swivel Chair")
+        product_type: Product type (e.g., "Chair")
+
+    Returns:
+        Fixture type name (e.g., "Swivel") or "Standard" as default for Chair/Sofa
+    """
+    if not product_name or not product_type:
+        return None
+
+    name_lower = product_name.lower()
+
+    # Special case: For Tables, check for nightstand first since it's more specific than "side table"
+    # This handles cases like "Nightstand / Side Table" where both terms appear
+    if product_type == "Table":
+        nightstand_keywords = ["nightstand", "night stand", "bedside table", "bedside"]
+        for keyword in nightstand_keywords:
+            pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+            if re.search(pattern, name_lower):
+                return "Nightstand"
+
+    # Get fixture types for this product type
+    fixture_list = FIXTURE_TYPES.get(product_type, [])
+
+    if not fixture_list:
+        return None
+
+    # Build a list of (fixture_name, keyword, keyword_length) tuples
+    # Sort by keyword length (descending) to match longer, more specific phrases first
+    keyword_matches = []
+    for fixture in fixture_list:
+        # Skip nightstand since we already checked it above for Tables
+        if product_type == "Table" and fixture.get('id') == 'nightstand':
+            continue
+        for keyword in fixture['keywords']:
+            keyword_matches.append((fixture['name'], keyword, len(keyword)))
+
+    # Sort by keyword length in descending order (longest first)
+    keyword_matches.sort(key=lambda x: x[2], reverse=True)
+
+    # Try to match against fixture type keywords
+    for fixture_name, keyword, _ in keyword_matches:
+        # Use word boundaries to avoid partial matches
+        pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+        if re.search(pattern, name_lower):
+            return fixture_name
+
+    # Default fixture types for products with no specific match
+    default_fixture_types = {
+        "Chair": "Standard",
+        "Sofa": "Standard",
+        "Table": "Standard"
+    }
+
+    return default_fixture_types.get(product_type, None)
+
+
 def categorize_product(product_name: str, category_url: str = None, category_name: str = None) -> dict:
     """
     Categorize a product based on its name, optional category URL, and optional category name.
@@ -204,7 +308,7 @@ def categorize_product(product_name: str, category_url: str = None, category_nam
         category_name: Optional category name (e.g., from TypeID metadata)
 
     Returns:
-        Dictionary with 'room_types' (list) and 'product_type' (str or None)
+        Dictionary with 'room_types' (list), 'product_type' (str or None), and 'fixture_type' (str or None)
     """
     room_types = []
     product_type = None
@@ -231,9 +335,13 @@ def categorize_product(product_name: str, category_url: str = None, category_nam
     if not room_types:
         room_types = ["Multi-Purpose"]
 
+    # Infer fixture type based on product type and name
+    fixture_type = infer_fixture_type(product_name, product_type) if product_type else None
+
     return {
         "room_types": room_types,
-        "product_type": product_type
+        "product_type": product_type,
+        "fixture_type": fixture_type
     }
 
 

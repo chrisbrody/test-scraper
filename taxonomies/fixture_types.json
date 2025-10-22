@@ -1,0 +1,397 @@
+{
+  "fixture_types": {
+    "Chair": [
+      {
+        "id": "swivel",
+        "name": "Swivel",
+        "keywords": ["swivel"]
+      },
+      {
+        "id": "reclining",
+        "name": "Reclining",
+        "keywords": ["reclining", "recliner"]
+      },
+      {
+        "id": "rocker",
+        "name": "Rocker",
+        "keywords": ["rocker", "rocking"]
+      },
+      {
+        "id": "glider",
+        "name": "Glider",
+        "keywords": ["glider", "gliding"]
+      },
+      {
+        "id": "slipcovered",
+        "name": "Slipcovered",
+        "keywords": ["slipcovered", "slipcover"]
+      },
+      {
+        "id": "accent",
+        "name": "Accent",
+        "keywords": ["accent"]
+      },
+      {
+        "id": "lounge",
+        "name": "Lounge",
+        "keywords": ["lounge"]
+      },
+      {
+        "id": "dining",
+        "name": "Dining",
+        "keywords": ["dining"]
+      },
+      {
+        "id": "office",
+        "name": "Office",
+        "keywords": ["office", "desk chair"]
+      },
+      {
+        "id": "armless",
+        "name": "Armless",
+        "keywords": ["armless", "side chair"]
+      },
+      {
+        "id": "wing",
+        "name": "Wing",
+        "keywords": ["wing", "wingback"]
+      },
+      {
+        "id": "club",
+        "name": "Club",
+        "keywords": ["club"]
+      },
+      {
+        "id": "bergere",
+        "name": "Bergere",
+        "keywords": ["bergere"]
+      },
+      {
+        "id": "chaise",
+        "name": "Chaise",
+        "keywords": ["chaise"]
+      },
+      {
+        "id": "carved",
+        "name": "Carved",
+        "keywords": ["carved"]
+      },
+      {
+        "id": "chair_and_half",
+        "name": "Chair and Half",
+        "keywords": ["chair and half"]
+      },
+      {
+        "id": "motion",
+        "name": "Motion",
+        "keywords": ["motion"]
+      }
+    ],
+    "Sofa": [
+      {
+        "id": "sectional",
+        "name": "Sectional",
+        "keywords": ["sectional"]
+      },
+      {
+        "id": "sleeper",
+        "name": "Sleeper",
+        "keywords": ["sleeper", "sofa bed"]
+      },
+      {
+        "id": "loveseat",
+        "name": "Loveseat",
+        "keywords": ["loveseat", "love seat"]
+      },
+      {
+        "id": "reclining",
+        "name": "Reclining",
+        "keywords": ["reclining"]
+      },
+      {
+        "id": "tuxedo",
+        "name": "Tuxedo",
+        "keywords": ["tuxedo"]
+      },
+      {
+        "id": "lawson",
+        "name": "Lawson",
+        "keywords": ["lawson"]
+      },
+      {
+        "id": "chesterfield",
+        "name": "Chesterfield",
+        "keywords": ["chesterfield"]
+      },
+      {
+        "id": "slipcovered",
+        "name": "Slipcovered",
+        "keywords": ["slipcovered", "slipcover"]
+      },
+      {
+        "id": "standard",
+        "name": "Standard",
+        "keywords": ["sofa", "couch"]
+      }
+    ],
+    "Table": [
+      {
+        "id": "cocktail",
+        "name": "Cocktail",
+        "keywords": ["cocktail", "coffee table"]
+      },
+      {
+        "id": "nightstand",
+        "name": "Nightstand",
+        "keywords": ["nightstand", "bedside table", "night stand", "bedside"]
+      },
+      {
+        "id": "side",
+        "name": "Side",
+        "keywords": ["side table", "end table", "spot table"]
+      },
+      {
+        "id": "console",
+        "name": "Console",
+        "keywords": ["console"]
+      },
+      {
+        "id": "credenza",
+        "name": "Credenza",
+        "keywords": ["credenza"]
+      },
+      {
+        "id": "dining",
+        "name": "Dining",
+        "keywords": ["dining table"]
+      },
+      {
+        "id": "desk",
+        "name": "Desk",
+        "keywords": ["desk"]
+      },
+      {
+        "id": "nesting",
+        "name": "Nesting",
+        "keywords": ["nesting"]
+      },
+      {
+        "id": "pedestal",
+        "name": "Pedestal",
+        "keywords": ["pedestal"]
+      },
+      {
+        "id": "trestle",
+        "name": "Trestle",
+        "keywords": ["trestle"]
+      },
+      {
+        "id": "drop_leaf",
+        "name": "Drop Leaf",
+        "keywords": ["drop leaf"]
+      },
+      {
+        "id": "extension",
+        "name": "Extension",
+        "keywords": ["extension", "expandable"]
+      },
+      {
+        "id": "standard",
+        "name": "Standard",
+        "keywords": ["table"]
+      }
+    ],
+    "Bed": [
+      {
+        "id": "platform",
+        "name": "Platform",
+        "keywords": ["platform"]
+      },
+      {
+        "id": "panel",
+        "name": "Panel",
+        "keywords": ["panel", "storage panel"]
+      },
+      {
+        "id": "canopy",
+        "name": "Canopy",
+        "keywords": ["canopy"]
+      },
+      {
+        "id": "poster",
+        "name": "Poster",
+        "keywords": ["poster", "four poster"]
+      },
+      {
+        "id": "sleigh",
+        "name": "Sleigh",
+        "keywords": ["sleigh"]
+      },
+      {
+        "id": "upholstered",
+        "name": "Upholstered",
+        "keywords": ["upholstered"]
+      },
+      {
+        "id": "storage",
+        "name": "Storage",
+        "keywords": ["storage"]
+      },
+      {
+        "id": "daybed",
+        "name": "Daybed",
+        "keywords": ["daybed"]
+      },
+      {
+        "id": "Shelter",
+        "name": "Shelter",
+        "keywords": ["shelter"]
+      }
+    ],
+    "Stool": [
+      {
+        "id": "bar",
+        "name": "Bar",
+        "keywords": ["bar stool"]
+      },
+      {
+        "id": "counter",
+        "name": "Counter",
+        "keywords": ["counter stool"]
+      },
+      {
+        "id": "swivel",
+        "name": "Swivel",
+        "keywords": ["swivel"]
+      },
+      {
+        "id": "backless",
+        "name": "Backless",
+        "keywords": ["backless"]
+      }
+    ],
+    "Ottoman": [
+      {
+        "id": "storage",
+        "name": "Storage",
+        "keywords": ["storage"]
+      },
+      {
+        "id": "cocktail",
+        "name": "Cocktail",
+        "keywords": ["cocktail"]
+      },
+      {
+        "id": "round",
+        "name": "Round",
+        "keywords": ["round"]
+      },
+      {
+        "id": "square",
+        "name": "Square",
+        "keywords": ["square"]
+      },
+      {
+        "id": "rectangular",
+        "name": "Rectangular",
+        "keywords": ["rectangular"]
+      }
+    ],
+    "Bench": [
+      {
+        "id": "upholstered",
+        "name": "Upholstered",
+        "keywords": ["upholstered"]
+      },
+      {
+        "id": "wood",
+        "name": "Wood",
+        "keywords": ["wood", "wooden"]
+      },
+      {
+        "id": "storage",
+        "name": "Storage",
+        "keywords": ["storage"]
+      },
+      {
+        "id": "dining",
+        "name": "Dining",
+        "keywords": ["dining"]
+      },
+      {
+        "id": "entryway",
+        "name": "Entryway",
+        "keywords": ["entryway", "entry"]
+      }
+    ],
+    "Cabinet": [
+      {
+        "id": "display",
+        "name": "Display",
+        "keywords": ["display"]
+      },
+      {
+        "id": "storage",
+        "name": "Storage",
+        "keywords": ["storage"]
+      },
+      {
+        "id": "media",
+        "name": "Media",
+        "keywords": ["media", "tv"]
+      },
+      {
+        "id": "bar",
+        "name": "Bar",
+        "keywords": ["bar cabinet"]
+      },
+      {
+        "id": "china",
+        "name": "China",
+        "keywords": ["china"]
+      }
+    ],
+    "Lighting": [
+      {
+        "id": "chandelier",
+        "name": "Chandelier",
+        "keywords": ["chandelier"]
+      },
+      {
+        "id": "pendant",
+        "name": "Pendant",
+        "keywords": ["pendant"]
+      },
+      {
+        "id": "wall_sconce",
+        "name": "Wall Sconce",
+        "keywords": ["wall sconce", "sconce"]
+      },
+      {
+        "id": "table_lamp",
+        "name": "Table Lamp",
+        "keywords": ["table lamp"]
+      },
+      {
+        "id": "floor_lamp",
+        "name": "Floor Lamp",
+        "keywords": ["floor lamp"]
+      },
+      {
+        "id": "flush_mount",
+        "name": "Flush Mount",
+        "keywords": ["flush mount", "semi flush"]
+      },
+      {
+        "id": "linear",
+        "name": "Linear",
+        "keywords": ["linear"]
+      },
+      {
+        "id": "vanity",
+        "name": "Vanity",
+        "keywords": ["vanity"]
+      }
+    ]
+  }
+}

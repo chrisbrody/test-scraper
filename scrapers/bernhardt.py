@@ -776,7 +776,8 @@ def merge_api_data_with_sku_map(api_products: List[Dict], sku_map: Dict[str, Dic
             "price": price,
             "in_stock": in_stock,
             "room_types": categorization['room_types'],
-            "product_type": categorization['product_type']
+            "product_type": categorization['product_type'],
+            "fixture_type": categorization['fixture_type']
         }
 
         products.append(product)

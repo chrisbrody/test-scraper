@@ -204,7 +204,8 @@ def scrape(room_configs=None, max_products=None):
                         "price": None,  # Woodbridge doesn't show price on listing page
                         "in_stock": None,  # Woodbridge doesn't show stock status on listing page
                         "room_types": room_types,
-                        "product_type": categorization['product_type']
+                        "product_type": categorization['product_type'],
+                        "fixture_type": categorization['fixture_type']
                     }
 
                     products_by_sku[sku] = product_data
